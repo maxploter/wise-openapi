@@ -1,0 +1,456 @@
+openapi: 3.0.0
+info:
+  title: Wise Profile API
+  description: API for managing personal and business profiles
+  version: 1.0.0
+servers:
+  - url: https://api.sandbox.transferwise.tech
+components:
+  schemas:
+    PersonalProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 30000001
+        type:
+          type: string
+          example: "personal"
+        details:
+          type: object
+          properties:
+            firstName:
+              type: string
+              example: "Oliver"
+            lastName:
+              type: string
+              example: "Wilson"
+            dateOfBirth:
+              type: string
+              format: date
+              example: "1977-07-01"
+            phoneNumber:
+              type: string
+              example: "+3725064992"
+            avatar:
+              type: string
+              example: ""
+            occupations:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "Software Engineer"
+                  format:
+                    type: string
+                    example: "FREE_FORM"
+            primaryAddress:
+              type: integer
+              nullable: true
+              example: null
+            firstNameInKana:
+              type: string
+              nullable: true
+              example: null
+            lastNameInKana:
+              type: string
+              nullable: true
+              example: null
+    BusinessProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 30000002
+        type:
+          type: string
+          example: "business"
+        details:
+          type: object
+          properties:
+            name:
+              type: string
+              example: "ABC Logistics Ltd"
+            registrationNumber:
+              type: string
+              example: "12144939"
+            companyType:
+              type: string
+              example: "LIMITED"
+            primaryAddress:
+              type: integer
+              example: 4000001
+    Error:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+          nullable: true
+        success:
+          type: boolean
+    Director:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        firstName:
+          type: string
+          example: "John"
+        lastName:
+          type: string
+          example: "Doe"
+        dateOfBirth:
+          type: string
+          format: date
+          example: "1982-05-20"
+        countryOfResidenceIso3Code:
+          type: string
+          example: "usa"
+    UBO:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "013ab1c2688d0185b582ee7e0bcb28b2"
+        name:
+          type: string
+          example: "John Doe"
+        dateOfBirth:
+          type: string
+          format: date
+          example: "1982-05-20"
+        countryOfResidenceIso3Code:
+          type: string
+          example: "usa"
+        addressFirstLine:
+          type: string
+          example: "123 Fake St"
+        postCode:
+          type: string
+          example: "FK 12345"
+        ownershipPercentage:
+          type: integer
+          example: 30
+    VerificationStatusResponse:
+      type: object
+      properties:
+        routes:
+          type: array
+          items:
+            type: object
+            properties:
+              source_currency:
+                type: string
+                example: "GBP"
+              maximum_entitled_amount:
+                type: number
+                example: 100000
+              current_status:
+                type: string
+                example: "verified"
+        request_id:
+          type: string
+          example: "e66da5f6-2456-403c-bfcb-908885ee1a61"
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+security:
+  - BearerAuth: []
+paths:
+  /v2/profiles/personal-profile:
+    post:
+      summary: Create a personal profile
+      operationId: createPersonalProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - firstName
+                - lastName
+                - address
+                - nationality
+                - dateOfBirth
+                - contactDetails
+              properties:
+                firstName:
+                  type: string
+                  maxLength: 30
+                lastName:
+                  type: string
+                  maxLength: 30
+                address:
+                  type: object
+                  required:
+                    - addressFirstLine
+                    - city
+                    - countryIso3Code
+                  properties:
+                    addressFirstLine:
+                      type: string
+                    city:
+                      type: string
+                    countryIso3Code:
+                      type: string
+                contactDetails:
+                  type: object
+                  required:
+                    - email
+                    - phoneNumber
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                    phoneNumber:
+                      type: string
+      responses:
+        '200':
+          description: Personal profile created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalProfile'
+  /v2/profiles/business-profile:
+    post:
+      summary: Create a business profile
+      operationId: createBusinessProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - businessName
+                - registrationNumber
+                - companyType
+                - address
+              properties:
+                businessName:
+                  type: string
+                registrationNumber:
+                  type: string
+                companyType:
+                  type: string
+                  enum: ["LIMITED", "PARTNERSHIP", ...]
+      responses:
+        '200':
+          description: Business profile created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessProfile'
+  /v2/profiles/{profileId}/personal-profile:
+    put:
+      summary: Update a personal profile
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  maxLength: 30
+                lastName:
+                  type: string
+                  maxLength: 30
+      responses:
+        '200':
+          description: Personal profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalProfile'
+  /v2/profiles/{profileId}/business-profile:
+    put:
+      summary: Update a business profile
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessName:
+                  type: string
+                registrationNumber:
+                  type: string
+      responses:
+        '200':
+          description: Business profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessProfile'
+  /v2/profiles/{profileId}:
+    get:
+      summary: Retrieve a profile by ID
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Profile details
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/PersonalProfile'
+                  - $ref: '#/components/schemas/BusinessProfile'
+  /v2/profiles:
+    get:
+      summary: List profiles for a user account
+      responses:
+        '200':
+          description: List of profiles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: '#/components/schemas/PersonalProfile'
+                    - $ref: '#/components/schemas/BusinessProfile'
+  /v1/profiles/{profileId}/verification-documents:
+    post:
+      summary: Create identification document
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+                - uniqueIdentifier
+              properties:
+                type:
+                  type: string
+                  enum: ["DRIVERS_LICENCE", "IDENTITY_CARD", ...]
+                uniqueIdentifier:
+                  type: string
+      responses:
+        '200':
+          description: Document created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /v1/profiles/{profileId}/directors:
+    post:
+      summary: Add directors
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Director'
+      responses:
+        '200':
+          description: Directors added
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Director'
+    get:
+      summary: List directors
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of directors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Director'
+    put:
+      summary: Update directors
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Director'
+      responses:
+        '200':
+          description: Directors updated
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Director'
+  /v3/profiles/{profileId}/verification-status/bank-transfer:
+    post:
+      summary: Check verification status
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: source_currencies
+          in: query
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: Verification status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationStatusResponse'
+# Additional endpoints (UBOs, update window, extension requirements etc) follow similar patterns
