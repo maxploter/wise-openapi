@@ -8,6 +8,7 @@ info:
     - Activity tracking and management
     - Quote creation and management
     - Recipient
+    - Transfer
 servers:
   - url: https://api.sandbox.transferwise.tech
 components:
@@ -672,6 +673,215 @@ components:
                               type: string
                             name:
                               type: string
+    StandardTransfer:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 16521632
+        user:
+          type: integer
+          example: 4342275
+        targetAccount:
+          type: integer
+          example: 8692237
+        sourceAccount:
+          type: integer
+          nullable: true
+        quoteUuid:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [ cancelled, pending, completed, failed ]
+        rate:
+          type: number
+          format: float
+          example: 0.89
+        created:
+          type: string
+          format: date-time
+        details:
+          $ref: '#/components/schemas/TransferDetails'
+        customerTransactionId:
+          type: string
+          format: uuid
+
+    OriginatorTransfer:
+      allOf:
+        - $ref: '#/components/schemas/StandardTransfer'
+        - type: object
+          properties:
+            originator:
+              $ref: '#/components/schemas/Originator'
+            originalTransferId:
+              type: string
+              format: uuid
+
+    Originator:
+      type: object
+      required:
+        - legalEntityType
+        - reference
+        - address
+      properties:
+        legalEntityType:
+          type: string
+          enum: [ PRIVATE, BUSINESS ]
+        reference:
+          type: string
+        name:
+          $ref: '#/components/schemas/OriginatorName'
+        dateOfBirth:
+          type: string
+          format: date
+        businessRegistrationCode:
+          type: string
+          nullable: true
+        address:
+          $ref: '#/components/schemas/OriginatorAddress'
+        accountDetails:
+          type: string
+          nullable: true
+
+    OriginatorName:
+      type: object
+      properties:
+        givenName:
+          type: string
+        middleNames:
+          type: array
+          items:
+            type: string
+        familyName:
+          type: string
+        patronymicName:
+          type: string
+          nullable: true
+        fullName:
+          type: string
+
+    OriginatorAddress:
+      type: object
+      required:
+        - firstLine
+        - city
+        - countryCode
+      properties:
+        firstLine:
+          type: string
+        city:
+          type: string
+        stateCode:
+          type: string
+          nullable: true
+        countryCode:
+          type: string
+          pattern: '^[A-Z]{2}$'
+        postCode:
+          type: string
+
+    TransferDetails:
+      type: object
+      properties:
+        reference:
+          type: string
+        transferPurpose:
+          type: string
+        transferPurposeSubTransferPurpose:
+          type: string
+        transferPurposeInvoiceNumber:
+          type: string
+        sourceOfFunds:
+          type: string
+
+    CreateStandardTransferRequest:
+      type: object
+      required:
+        - targetAccount
+        - quoteUuid
+        - customerTransactionId
+      properties:
+        targetAccount:
+          type: integer
+        quoteUuid:
+          type: string
+          format: uuid
+        customerTransactionId:
+          type: string
+          format: uuid
+        details:
+          $ref: '#/components/schemas/TransferDetails'
+        sourceAccount:
+          type: integer
+          nullable: true
+
+    CreateThirdPartyTransferRequest:
+      type: object
+      required:
+        - targetAccount
+        - quote
+        - originalTransferId
+        - originator
+      properties:
+        targetAccount:
+          type: integer
+        quote:
+          type: string
+          format: uuid
+        originalTransferId:
+          type: string
+          format: uuid
+        originator:
+          $ref: '#/components/schemas/Originator'
+        details:
+          $ref: '#/components/schemas/TransferDetails'
+
+    TransferRequirementsResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          type:
+            type: string
+          fields:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                group:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/RequirementField'
+
+    RequirementField:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [ text, select ]
+        refreshRequirementsOnChange:
+          type: boolean
+        required:
+          type: boolean
+        validationRegexp:
+          type: string
+          nullable: true
+        valuesAllowed:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              name:
+                type: string
   securitySchemes:
     BearerAuth:
       type: http
@@ -1280,3 +1490,149 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountRequirements'
+  /v1/transfers:
+    post:
+      summary: Create a standard transfer
+      description: Create a new standard transfer between accounts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStandardTransferRequest'
+      responses:
+        '200':
+          description: Standard transfer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardTransfer'
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Payment approval required
+      security:
+        - BearerAuth: [ ]
+
+    get:
+      summary: List transfers
+      description: Retrieve transfers with filtering
+      parameters:
+        - name: profile
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: sourceCurrency
+          in: query
+          schema:
+            type: string
+        - name: targetCurrency
+          in: query
+          schema:
+            type: string
+        - name: createdDateStart
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: createdDateEnd
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of transfers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: '#/components/schemas/StandardTransfer'
+                    - $ref: '#/components/schemas/OriginatorTransfer'
+      security:
+        - BearerAuth: [ ]
+
+  /v1/transfers/{transferId}:
+    get:
+      summary: Get transfer by ID
+      parameters:
+        - name: transferId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Transfer details
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/StandardTransfer'
+                  - $ref: '#/components/schemas/OriginatorTransfer'
+        '404':
+          description: Transfer not found
+      security:
+        - BearerAuth: [ ]
+
+    put:
+      summary: Cancel transfer
+      parameters:
+        - name: transferId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Transfer cancelled
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/StandardTransfer'
+                  - $ref: '#/components/schemas/OriginatorTransfer'
+        '400':
+          description: Transfer cannot be cancelled
+      security:
+        - BearerAuth: [ ]
+
+  /v1/transfers/{transferId}/receipt.pdf:
+    get:
+      summary: Get transfer receipt
+      parameters:
+        - name: transferId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: PDF receipt
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Receipt not available
+      security:
+        - BearerAuth: [ ]
