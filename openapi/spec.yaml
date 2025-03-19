@@ -7,6 +7,7 @@ info:
     - Profile
     - Activity tracking and management
     - Quote creation and management
+    - Recipient
 servers:
   - url: https://api.sandbox.transferwise.tech
 components:
@@ -501,8 +502,176 @@ components:
               type: string
         pricingConfiguration:
           $ref: '#/components/schemas/PricingConfiguration'
+    Recipient:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 40000000
+        creatorId:
+          type: integer
+          example: 41000000
+        profileId:
+          type: integer
+          example: 30000000
+        name:
+          type: object
+          properties:
+            fullName:
+              type: string
+              example: John Doe
+            givenName:
+              type: string
+              nullable: true
+            familyName:
+              type: string
+              nullable: true
+            middleName:
+              type: string
+              nullable: true
+        currency:
+          type: string
+          example: GBP
+        country:
+          type: string
+          example: GB
+        type:
+          type: string
+          example: SortCode
+        legalEntityType:
+          type: string
+          example: PERSON
+        active:
+          type: boolean
+        details:
+          type: object
+          properties:
+            reference:
+              type: string
+              nullable: true
+            sortCode:
+              type: string
+              example: "040075"
+            accountNumber:
+              type: string
+              example: "37778842"
+        commonFieldMap:
+          type: object
+          properties:
+            bankCodeField:
+              type: string
+              example: sortCode
+        hash:
+          type: string
+        accountSummary:
+          type: string
+        longAccountSummary:
+          type: string
+        displayFields:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              label:
+                type: string
+              value:
+                type: string
+        ownedByCustomer:
+          type: boolean
 
+    CreateRecipientRequest:
+      type: object
+      required:
+        - currency
+        - type
+        - profile
+        - accountHolderName
+        - details
+      properties:
+        currency:
+          type: string
+          example: GBP
+        type:
+          type: string
+          example: sort_code
+        profile:
+          type: integer
+          example: 30000000
+        accountHolderName:
+          type: string
+          example: John Doe
+        ownedByCustomer:
+          type: boolean
+        details:
+          type: object
+          required:
+            - legalType
+          properties:
+            legalType:
+              type: string
+              enum: [PRIVATE, BUSINESS]
+            sortCode:
+              type: string
+            accountNumber:
+              type: string
+            dateOfBirth:
+              type: string
+              format: date
+              example: "1961-01-01"
 
+    PaginatedRecipients:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipient'
+        size:
+          type: integer
+          example: 1
+
+    AccountRequirements:
+      type: array
+      items:
+        type: object
+        properties:
+          type:
+            type: string
+          title:
+            type: string
+          fields:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                group:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      key:
+                        type: string
+                      name:
+                        type: string
+                      type:
+                        type: string
+                      required:
+                        type: boolean
+                      validationRegexp:
+                        type: string
+                      valuesAllowed:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            name:
+                              type: string
   securitySchemes:
     BearerAuth:
       type: http
@@ -961,3 +1130,153 @@ paths:
                 $ref: '#/components/schemas/Quote'
       security:
         - BearerAuth: [ ]
+  /v1/accounts:
+    post:
+      summary: Create a recipient account
+      security:
+        - BearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRecipientRequest'
+      responses:
+        '200':
+          description: Created recipient account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipient'
+
+  /v1/refund-accounts:
+    post:
+      summary: Create a refund recipient account
+      security:
+        - BearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currency:
+                  type: string
+                country:
+                  type: string
+                type:
+                  type: string
+                profile:
+                  type: integer
+                legalEntityType:
+                  type: string
+                name:
+                  type: object
+                  properties:
+                    fullName:
+                      type: string
+                details:
+                  type: object
+      responses:
+        '200':
+          description: Created refund recipient
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipient'
+
+  /v2/accounts:
+    get:
+      summary: List recipient accounts
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: profileId
+          in: query
+          schema:
+            type: integer
+        - name: currency
+          in: query
+          schema:
+            type: string
+        - name: size
+          in: query
+          schema:
+            type: integer
+        - name: seekPosition
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of recipient accounts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRecipients'
+
+  /v2/accounts/{accountId}:
+    get:
+      summary: Get recipient account by ID
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Recipient account details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipient'
+    delete:
+      summary: Deactivate a recipient account
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Deactivated recipient
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipient'
+
+  /v1/quotes/{quoteId}/account-requirements:
+    get:
+      summary: Get account requirements for a quote
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: quoteId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: originatorLegalEntityType
+          in: query
+          schema:
+            type: string
+            enum: [ BUSINESS, PRIVATE ]
+      headers:
+        Accept-Minor-Version:
+          schema:
+            type: string
+            default: '1'
+      responses:
+        '200':
+          description: Account requirements
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountRequirements'
