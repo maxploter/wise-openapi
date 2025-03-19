@@ -1712,8 +1712,8 @@ paths:
             enum:
               - BUSINESS
               - PRIVATE
-      headers:
-        Accept-Minor-Version:
+        - name: Accept-Minor-Version
+          in: header
           schema:
             type: string
             default: "1"
