@@ -1,8 +1,12 @@
 openapi: 3.0.0
 info:
-  title: Wise Profile API
-  description: API for managing personal and business profiles
+  title: Wise Platform API
   version: 1.0.0
+  description: |
+    Comprehensive API for Wise platform services including:
+    - Profile
+    - Activity tracking and management
+    - Quote creation and management
 servers:
   - url: https://api.sandbox.transferwise.tech
 components:
@@ -284,6 +288,219 @@ components:
         - UPCOMING
         - COMPLETED
         - CANCELLED
+    Quote:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: GUID format quote ID
+        sourceCurrency:
+          type: string
+          example: GBP
+        targetCurrency:
+          type: string
+          example: USD
+        sourceAmount:
+          type: number
+          format: double
+          example: 100
+        targetAmount:
+          type: number
+          format: double
+          example: 129.24
+        payOut:
+          type: string
+          example: BANK_TRANSFER
+        rate:
+          type: number
+          format: double
+          example: 1.30445
+        createdTime:
+          type: string
+          format: date-time
+          example: "2019-04-05T13:18:58Z"
+        profile:
+          type: integer
+          example: 101
+        rateType:
+          type: string
+          enum: [ FIXED, FLOATING ]
+          example: FIXED
+        rateExpirationTime:
+          type: string
+          format: date-time
+          example: "2019-04-08T13:18:57Z"
+        providedAmountType:
+          type: string
+          enum: [ SOURCE, TARGET ]
+          example: SOURCE
+        pricingConfiguration:
+          $ref: '#/components/schemas/PricingConfiguration'
+        paymentOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentOption'
+        status:
+          type: string
+          enum: [ PENDING, ACCEPTED, FUNDED, EXPIRED ]
+          example: PENDING
+        expirationTime:
+          type: string
+          format: date-time
+          example: "2019-04-05T13:48:58Z"
+        notices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notice'
+
+    PricingConfiguration:
+      type: object
+      properties:
+        fee:
+          $ref: '#/components/schemas/FeeConfiguration'
+
+    FeeConfiguration:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [ OVERRIDE ]
+        variable:
+          type: number
+          format: double
+        fixed:
+          type: number
+          format: double
+
+    PaymentOption:
+      type: object
+      properties:
+        disabled:
+          type: boolean
+        estimatedDelivery:
+          type: string
+          format: date-time
+        formattedEstimatedDelivery:
+          type: string
+        fee:
+          $ref: '#/components/schemas/FeeDetails'
+        price:
+          $ref: '#/components/schemas/PriceDetails'
+        payIn:
+          type: string
+        payOut:
+          type: string
+
+    FeeDetails:
+      type: object
+      properties:
+        total:
+          type: number
+          format: double
+
+    PriceDetails:
+      type: object
+      properties:
+        total:
+          $ref: '#/components/schemas/TotalPrice'
+
+    TotalPrice:
+      type: object
+      properties:
+        value:
+          $ref: '#/components/schemas/Amount'
+
+    Amount:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+
+    Notice:
+      type: object
+      properties:
+        text:
+          type: string
+        type:
+          type: string
+          enum: [ WARNING, INFO, BLOCKED ]
+
+    CreateUnauthenticatedQuoteRequest:
+      type: object
+      required:
+        - sourceCurrency
+        - targetCurrency
+      properties:
+        sourceCurrency:
+          type: string
+        targetCurrency:
+          type: string
+        sourceAmount:
+          type: number
+          format: double
+          nullable: true
+        targetAmount:
+          type: number
+          format: double
+          nullable: true
+        pricingConfiguration:
+          $ref: '#/components/schemas/PricingConfiguration'
+      oneOf:
+        - required: [ sourceAmount ]
+        - required: [ targetAmount ]
+
+    CreateAuthenticatedQuoteRequest:
+      type: object
+      required:
+        - sourceCurrency
+        - targetCurrency
+      properties:
+        sourceCurrency:
+          type: string
+        targetCurrency:
+          type: string
+        sourceAmount:
+          type: number
+          format: double
+          nullable: true
+        targetAmount:
+          type: number
+          format: double
+          nullable: true
+        targetAccount:
+          type: integer
+          nullable: true
+        paymentMetadata:
+          type: object
+          properties:
+            transferNature:
+              type: string
+          nullable: true
+        pricingConfiguration:
+          $ref: '#/components/schemas/PricingConfiguration'
+          nullable: true
+      oneOf:
+        - required: [ sourceAmount ]
+        - required: [ targetAmount ]
+
+    UpdateQuoteRequest:
+      type: object
+      properties:
+        targetAccount:
+          type: integer
+        payOut:
+          type: string
+        paymentMetadata:
+          type: object
+          properties:
+            transferNature:
+              type: string
+        pricingConfiguration:
+          $ref: '#/components/schemas/PricingConfiguration'
 
 
   securitySchemes:
@@ -641,5 +858,106 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ActivitiesResponse'
+      security:
+        - BearerAuth: [ ]
+  /quotes:
+    post:
+      summary: Create an unauthenticated quote
+      description: Creates an example quote for illustration purposes. The returned quote cannot be used to create transfers.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUnauthenticatedQuoteRequest'
+      responses:
+        '200':
+          description: Successfully created unauthenticated quote
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+      security: [ ]
+
+  /profiles/{profileId}/quotes:
+    post:
+      summary: Create an authenticated quote
+      description: Creates a quote associated with a profile. Requires user authentication.
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAuthenticatedQuoteRequest'
+      responses:
+        '201':
+          description: Successfully created authenticated quote
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+      security:
+        - BearerAuth: [ ]
+
+  /profiles/{profileId}/quotes/{quoteId}:
+    patch:
+      summary: Update a quote
+      description: Updates a quote with recipient information or payment metadata.
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: quoteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/UpdateQuoteRequest'
+      responses:
+        '200':
+          description: Successfully updated quote
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+      security:
+        - BearerAuth: [ ]
+
+    get:
+      summary: Retrieve a quote by ID
+      description: Retrieves a quote by its ID. Expired quotes are available for ~48 hours.
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: quoteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successfully retrieved quote
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
       security:
         - BearerAuth: [ ]
