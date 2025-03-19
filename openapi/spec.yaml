@@ -8,6 +8,7 @@ info:
     - Activity tracking and management
     - Quote creation and management
     - Recipient
+    - Transfer
 servers:
   - url: https://api.sandbox.transferwise.tech
 components:
@@ -672,6 +673,447 @@ components:
                               type: string
                             name:
                               type: string
+    StandardTransfer:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              example: 16521632
+            user:
+              type: integer
+              example: 4342275
+            targetAccount:
+              type: integer
+              example: 8692237
+            sourceAccount:
+              type: integer
+              nullable: true
+            quote:
+              type: integer
+              nullable: true
+            quoteUuid:
+              type: string
+              format: uuid
+              example: "8fa9be20-ba43-4b15-abbb-9424e1481050"
+            status:
+              type: string
+              enum: [pending, processing, funded, cancelled, outgoing_payment_sent, funds_refunded]
+            reference:
+              type: string
+              deprecated: true
+            rate:
+              type: number
+              format: float
+              example: 0.89
+            created:
+              type: string
+              format: date-time
+            business:
+              type: integer
+              nullable: true
+            transferRequest:
+              type: integer
+              nullable: true
+              deprecated: true
+            details:
+              $ref: '#/components/schemas/TransferDetails'
+            hasActiveIssues:
+              type: boolean
+            sourceCurrency:
+              type: string
+              pattern: '^[A-Z]{3}$'
+            sourceValue:
+              type: number
+              format: float
+            targetCurrency:
+              type: string
+              pattern: '^[A-Z]{3}$'
+            targetValue:
+              type: number
+              format: float
+            customerTransactionId:
+              type: string
+              format: uuid
+          required:
+            - id
+            - user
+            - targetAccount
+            - quoteUuid
+            - status
+            - rate
+            - created
+            - details
+            - sourceCurrency
+            - sourceValue
+            - targetCurrency
+            - targetValue
+
+    OriginatorTransfer:
+      allOf:
+        - $ref: '#/components/schemas/StandardTransfer'
+        - type: object
+          properties:
+            originator:
+              $ref: '#/components/schemas/Originator'
+            originalTransferId:
+              type: string
+              format: uuid
+          required:
+            - originator
+            - originalTransferId
+
+    Originator:
+      type: object
+      properties:
+        legalEntityType:
+          type: string
+          enum: [PRIVATE, BUSINESS]
+        reference:
+          type: string
+        name:
+          $ref: '#/components/schemas/OriginatorName'
+        dateOfBirth:
+          type: string
+          format: date
+        businessRegistrationCode:
+          type: string
+          nullable: true
+        address:
+          $ref: '#/components/schemas/OriginatorAddress'
+        accountDetails:
+          type: string
+          nullable: true
+      required:
+        - legalEntityType
+        - reference
+        - address
+
+    OriginatorName:
+      type: object
+      properties:
+        givenName:
+          type: string
+        middleNames:
+          type: array
+          items:
+            type: string
+        familyName:
+          type: string
+        patronymicName:
+          type: string
+          nullable: true
+        fullName:
+          type: string
+      required:
+        - givenName
+        - familyName
+
+    OriginatorAddress:
+      type: object
+      properties:
+        firstLine:
+          type: string
+        city:
+          type: string
+        stateCode:
+          type: string
+          nullable: true
+        countryCode:
+          type: string
+          pattern: '^[A-Z]{2}$'
+        postCode:
+          type: string
+          nullable: true
+      required:
+        - firstLine
+        - city
+        - countryCode
+
+    TransferDetails:
+      type: object
+      properties:
+        reference:
+          type: string
+          maxLength: 100
+        transferPurpose:
+          type: string
+        transferPurposeSubTransferPurpose:
+          type: string
+        transferPurposeInvoiceNumber:
+          type: string
+        sourceOfFunds:
+          type: string
+      required:
+        - reference
+
+    CreateStandardTransferRequest:
+      type: object
+      properties:
+        sourceAccount:
+          type: integer
+          nullable: true
+        targetAccount:
+          type: integer
+        quoteUuid:
+          type: string
+          format: uuid
+        customerTransactionId:
+          type: string
+          format: uuid
+        details:
+          $ref: '#/components/schemas/TransferDetails'
+      required:
+        - targetAccount
+        - quoteUuid
+        - customerTransactionId
+        - details
+
+    CreateThirdPartyTransferRequest:
+      type: object
+      properties:
+        targetAccount:
+          type: integer
+        quote:
+          type: string
+          format: uuid
+        originalTransferId:
+          type: string
+          format: uuid
+        details:
+          $ref: '#/components/schemas/TransferDetails'
+        originator:
+          $ref: '#/components/schemas/Originator'
+      required:
+        - targetAccount
+        - quote
+        - originalTransferId
+        - originator
+
+    CreatePartnerLicenceTransferRequest:
+      type: object
+      properties:
+        sourceAccount:
+          type: integer
+          nullable: true
+        targetAccount:
+          type: integer
+        quote:
+          type: string
+          format: uuid
+        customerTransactionId:
+          type: string
+          format: uuid
+        details:
+          $ref: '#/components/schemas/TransferDetails'
+        originator:
+          $ref: '#/components/schemas/Originator'
+      required:
+        - targetAccount
+        - quote
+        - customerTransactionId
+        - originator
+
+    TransferRequirementsRequest:
+      type: object
+      properties:
+        targetAccount:
+          type: integer
+        quoteUuid:
+          type: string
+          format: uuid
+        details:
+          type: object
+        customerTransactionId:
+          type: string
+          format: uuid
+      required:
+        - targetAccount
+        - quoteUuid
+
+    TransferRequirementsResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          type:
+            type: string
+            enum: [transfer]
+          fields:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                group:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/RequirementField'
+
+    RequirementField:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [text, select]
+        refreshRequirementsOnChange:
+          type: boolean
+        required:
+          type: boolean
+        displayFormat:
+          type: string
+          nullable: true
+        example:
+          type: string
+          nullable: true
+        minLength:
+          type: integer
+          nullable: true
+        maxLength:
+          type: integer
+          nullable: true
+        validationRegexp:
+          type: string
+          nullable: true
+        valuesAllowed:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              name:
+                type: string
+
+    PaymentRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [BALANCE, TRUSTED_PRE_FUND_BULK]
+        partnerReference:
+          type: string
+      required:
+        - type
+
+    PaymentResponse:
+      type: object
+      properties:
+        type:
+          type: string
+        status:
+          type: string
+          enum: [COMPLETED, REJECTED]
+        errorCode:
+          type: string
+          nullable: true
+
+    PaymentsList:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+          method:
+            type: string
+          pricingVariant:
+            type: string
+            nullable: true
+          amount:
+            type: number
+          currency:
+            type: string
+          timeCreated:
+            type: string
+            format: date-time
+          timeUpdated:
+            type: string
+            format: date-time
+
+    BankingPartnerInvoice:
+      type: object
+      properties:
+        processorName:
+          type: string
+        deliveryMode:
+          type: string
+        bankingPartnerReference:
+          type: string
+        bankingPartnerName:
+          type: string
+        mt103:
+          type: string
+          nullable: true
+
+  parameters:
+    profileId:
+      name: profileId
+      in: path
+      required: true
+      schema:
+        type: string
+    transferId:
+      name: transferId
+      in: path
+      required: true
+      schema:
+        type: integer
+    profile:
+      name: profile
+      in: query
+      schema:
+        type: integer
+    status:
+      name: status
+      in: query
+      schema:
+        type: string
+    sourceCurrency:
+      name: sourceCurrency
+      in: query
+      schema:
+        type: string
+        pattern: '^[A-Z]{3}$'
+    targetCurrency:
+      name: targetCurrency
+      in: query
+      schema:
+        type: string
+        pattern: '^[A-Z]{3}$'
+    createdDateStart:
+      name: createdDateStart
+      in: query
+      schema:
+        type: string
+        format: date-time
+    createdDateEnd:
+      name: createdDateEnd
+      in: query
+      schema:
+        type: string
+        format: date-time
+    limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+        minimum: 1
+        maximum: 1000
+    offset:
+      name: offset
+      in: query
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+
   securitySchemes:
     BearerAuth:
       type: http
@@ -1267,16 +1709,270 @@ paths:
           in: query
           schema:
             type: string
-            enum: [ BUSINESS, PRIVATE ]
-      headers:
-        Accept-Minor-Version:
+            enum:
+              - BUSINESS
+              - PRIVATE
+        - name: Accept-Minor-Version
+          in: header
           schema:
             type: string
-            default: '1'
+            default: "1"
       responses:
-        '200':
+        "200":
           description: Account requirements
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountRequirements'
+                $ref: "#/components/schemas/AccountRequirements"
+  /v1/transfers:
+    post:
+      summary: Create a standard transfer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStandardTransferRequest'
+      responses:
+        '201':
+          description: Transfer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardTransfer'
+      security:
+        - BearerAuth: [ ]
+
+    get:
+      summary: List transfers
+      parameters:
+        - $ref: '#/components/parameters/profile'
+        - $ref: '#/components/parameters/status'
+        - $ref: '#/components/parameters/sourceCurrency'
+        - $ref: '#/components/parameters/targetCurrency'
+        - $ref: '#/components/parameters/createdDateStart'
+        - $ref: '#/components/parameters/createdDateEnd'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+      responses:
+        '200':
+          description: List of transfers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: '#/components/schemas/StandardTransfer'
+                    - $ref: '#/components/schemas/OriginatorTransfer'
+      security:
+        - BearerAuth: [ ]
+
+  /v1/transfers/{transferId}:
+    get:
+      summary: Get transfer by ID
+      parameters:
+        - $ref: '#/components/parameters/transferId'
+      responses:
+        '200':
+          description: Transfer details
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/StandardTransfer'
+                  - $ref: '#/components/schemas/OriginatorTransfer'
+      security:
+        - BearerAuth: [ ]
+
+    put:
+      summary: Cancel transfer
+      parameters:
+        - $ref: '#/components/parameters/transferId'
+      responses:
+        '200':
+          description: Transfer cancelled
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/StandardTransfer'
+                  - $ref: '#/components/schemas/OriginatorTransfer'
+      security:
+        - BearerAuth: [ ]
+
+  /v1/transfers/{transferId}/receipt.pdf:
+    get:
+      summary: Get transfer receipt PDF
+      parameters:
+        - $ref: '#/components/parameters/transferId'
+      responses:
+        '200':
+          description: PDF receipt
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+      security:
+        - BearerAuth: [ ]
+
+  /v1/transfers/{transferId}/documents/noc:
+    get:
+      summary: Get NOC document
+      parameters:
+        - $ref: '#/components/parameters/transferId'
+      responses:
+        '200':
+          description: NOC PDF document
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+      security:
+        - BearerAuth: [ ]
+
+  /v1/transfers/{transferId}/invoices/bankingpartner:
+    get:
+      summary: Get banking partner invoice (v1)
+      parameters:
+        - $ref: '#/components/parameters/transferId'
+      responses:
+        '200':
+          description: Banking partner invoice details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankingPartnerInvoice'
+      security:
+        - BearerAuth: [ ]
+
+  /v2/transfers/{transferId}/invoices/bankingpartner:
+    get:
+      summary: Get banking partner invoice (v2)
+      parameters:
+        - $ref: '#/components/parameters/transferId'
+      responses:
+        '200':
+          description: Banking partner invoice details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankingPartnerInvoice'
+      security:
+        - BearerAuth: [ ]
+
+  /v1/transfers/{transferId}/payments:
+    get:
+      summary: List transfer payments
+      parameters:
+        - $ref: '#/components/parameters/transferId'
+      responses:
+        '200':
+          description: List of payments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentsList'
+      security:
+        - BearerAuth: [ ]
+
+  /v2/profiles/{profileId}/third-party-transfers:
+    post:
+      summary: Create third-party transfer
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateThirdPartyTransferRequest'
+      responses:
+        '201':
+          description: Transfer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OriginatorTransfer'
+      security:
+        - BearerAuth: [ ]
+
+  /v2/profiles/{profileId}/third-party-transfers/{transferId}:
+    get:
+      summary: Get third-party transfer
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+        - $ref: '#/components/parameters/transferId'
+      responses:
+        '200':
+          description: Transfer details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OriginatorTransfer'
+      security:
+        - BearerAuth: [ ]
+
+  /v1/profiles/{profileId}/partner-licence-transfers:
+    post:
+      summary: Create partner license transfer
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePartnerLicenceTransferRequest'
+      responses:
+        '201':
+          description: Transfer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OriginatorTransfer'
+      security:
+        - BearerAuth: [ ]
+
+  /v1/transfer-requirements:
+    post:
+      summary: Get transfer requirements
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferRequirementsRequest'
+      responses:
+        '200':
+          description: Transfer requirements
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferRequirementsResponse'
+      security:
+        - BearerAuth: [ ]
+
+  /v3/profiles/{profileId}/transfers/{transferId}/payments:
+    post:
+      summary: Fund a transfer
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+        - $ref: '#/components/parameters/transferId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '200':
+          description: Payment processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+      security:
+        - BearerAuth: [ ]
