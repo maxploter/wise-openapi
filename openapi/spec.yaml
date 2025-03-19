@@ -154,12 +154,144 @@ components:
         request_id:
           type: string
           example: "e66da5f6-2456-403c-bfcb-908885ee1a61"
+    Activity:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique activity identifier
+        type:
+          $ref: '#/components/schemas/ActivityType'
+        resource:
+          $ref: '#/components/schemas/ActivityResource'
+        title:
+          type: string
+          description: |
+            Title with custom formatting tags:
+            <strong>, <positive>, <negative>, <strikethrough>
+        description:
+          type: string
+          description: Brief activity summary
+        primaryAmount:
+          type: string
+          description: Currency-formatted primary amount (e.g., "100 USD")
+        secondaryAmount:
+          type: string
+          description: Currency-formatted secondary amount (optional)
+        status:
+          $ref: '#/components/schemas/ActivityStatus'
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - resource
+        - title
+        - status
+        - createdOn
+        - updatedOn
+
+    ActivityResource:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ActivityResourceType'
+        id:
+          type: string
+          description: Resource identifier
+      required:
+        - type
+        - id
+
+    ActivitiesResponse:
+      type: object
+      properties:
+        cursor:
+          type: string
+          nullable: true
+          description: Pagination cursor for next page
+        activities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Activity'
+
+    ActivityType:
+      type: string
+      enum:
+        - ACQUIRING_PAYMENT
+        - AUTO_CONVERSION
+        - BALANCE_ADJUSTMENT
+        - BALANCE_ASSET_FEE
+        - BALANCE_CASHBACK
+        - BALANCE_DEPOSIT
+        - BALANCE_HOLD_FEE
+        - BALANCE_INTEREST
+        - BANK_DETAILS_ORDER
+        - BATCH_TRANSFER
+        - CARD_CASHBACK
+        - CARD_CHECK
+        - CARD_ORDER
+        - CARD_PAYMENT
+        - CASH_WITHDRAWAL
+        - CLAIMABLE_SEND_ORDER
+        - DIRECT_DEBIT_TRANSACTION
+        - EXCESS_REFUND
+        - FEE_REFUND
+        - INCORPORATION_ORDER
+        - INTERBALANCE
+        - PAYMENT_REQUEST
+        - PREFUNDING_TRANSFER
+        - REWARD
+        - SCHEDULED_SEND_ORDER
+        - TRANSFER
+
+    ActivityResourceType:
+      type: string
+      enum:
+        - ACCRUAL_CHARGE
+        - ACQUIRING_PAYMENT
+        - ASSETS_WITHDRAWAL
+        - BALANCE_CASHBACK
+        - BALANCE_INTEREST
+        - BALANCE_TRANSACTION
+        - BANK_DETAILS_ORDER
+        - BATCH_TRANSFER
+        - CARD_CASHBACK
+        - CARD_ORDER
+        - CARD_TRANSACTION
+        - DIRECT_DEBIT_INSTRUCTION
+        - DIRECT_DEBIT_TRANSACTION
+        - FEE_REFUND
+        - INCIDENT_REFUND
+        - INCORPORATION_ORDER
+        - OPERATIONAL_TRANSACTION
+        - PAYMENT_REQUEST
+        - REWARD
+        - REWARDS_REDEMPTION
+        - SEND_ORDER
+        - SEND_ORDER_EXECUTION
+        - TRANSFER
+
+    ActivityStatus:
+      type: string
+      enum:
+        - REQUIRES_ATTENTION
+        - IN_PROGRESS
+        - UPCOMING
+        - COMPLETED
+        - CANCELLED
+
+
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
 security:
-  - BearerAuth: []
+  - BearerAuth: [ ]
 paths:
   /v2/profiles/personal-profile:
     post:
@@ -238,7 +370,7 @@ paths:
                   type: string
                 companyType:
                   type: string
-                  enum: ["LIMITED", "PARTNERSHIP", ...]
+                  enum: [ "LIMITED", "PARTNERSHIP", ... ]
       responses:
         '200':
           description: Business profile created
@@ -354,7 +486,7 @@ paths:
               properties:
                 type:
                   type: string
-                  enum: ["DRIVERS_LICENCE", "IDENTITY_CARD", ...]
+                  enum: [ "DRIVERS_LICENCE", "IDENTITY_CARD", ... ]
                 uniqueIdentifier:
                   type: string
       responses:
@@ -453,4 +585,61 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/VerificationStatusResponse'
-# Additional endpoints (UBOs, update window, extension requirements etc) follow similar patterns
+
+  /profiles/{profileId}/activities:
+    get:
+      tags:
+        - Activities
+      summary: List activities for a profile
+      description: Retrieve paginated list of activities for a user profile with filtering options
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the user profile
+        - name: monetaryResourceType
+          in: query
+          schema:
+            $ref: '#/components/schemas/ActivityResourceType'
+          description: Filter by resource type
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/ActivityStatus'
+          description: Filter by activity status
+        - name: since
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Filter activities created after this timestamp
+        - name: until
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Filter activities created before this timestamp
+        - name: nextCursor
+          in: query
+          schema:
+            type: string
+          description: Pagination cursor for next page
+        - name: size
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Number of results per page
+      responses:
+        '200':
+          description: Successful response with activities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivitiesResponse'
+      security:
+        - BearerAuth: [ ]
