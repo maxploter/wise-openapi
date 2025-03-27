@@ -11,6 +11,17 @@ info:
     - Transfer
 servers:
   - url: https://api.sandbox.transferwise.tech
+tags:
+  - name: Profiles
+    description: Operations for managing personal and business profiles
+  - name: Activities
+    description: Operations for tracking profile activities
+  - name: Quotes
+    description: Operations for creating and managing currency exchange quotes
+  - name: Recipients
+    description: Operations for managing recipient accounts
+  - name: Transfers
+    description: Operations for creating and managing money transfers
 components:
   schemas:
     PersonalProfile:
@@ -1123,6 +1134,8 @@ security:
 paths:
   /v2/profiles/personal-profile:
     post:
+      tags:
+        - Profiles
       summary: Create a personal profile
       operationId: createPersonalProfile
       requestBody:
@@ -1178,6 +1191,8 @@ paths:
                 $ref: '#/components/schemas/PersonalProfile'
   /v2/profiles/business-profile:
     post:
+      tags:
+        - Profiles
       summary: Create a business profile
       operationId: createBusinessProfile
       requestBody:
@@ -1208,6 +1223,8 @@ paths:
                 $ref: '#/components/schemas/BusinessProfile'
   /v2/profiles/{profileId}/personal-profile:
     put:
+      tags:
+        - Profiles
       summary: Update a personal profile
       parameters:
         - name: profileId
@@ -1237,6 +1254,8 @@ paths:
                 $ref: '#/components/schemas/PersonalProfile'
   /v2/profiles/{profileId}/business-profile:
     put:
+      tags:
+        - Profiles
       summary: Update a business profile
       parameters:
         - name: profileId
@@ -1264,6 +1283,8 @@ paths:
                 $ref: '#/components/schemas/BusinessProfile'
   /v2/profiles/{profileId}:
     get:
+      tags:
+        - Profiles
       summary: Retrieve a profile by ID
       parameters:
         - name: profileId
@@ -1282,6 +1303,8 @@ paths:
                   - $ref: '#/components/schemas/BusinessProfile'
   /v2/profiles:
     get:
+      tags:
+        - Profiles
       summary: List profiles for a user account
       responses:
         '200':
@@ -1301,6 +1324,8 @@ paths:
                       BUSINESS: '#/components/schemas/BusinessProfile'
   /v1/profiles/{profileId}/verification-documents:
     post:
+      tags:
+        - Profiles
       summary: Create identification document
       parameters:
         - name: profileId
@@ -1331,6 +1356,8 @@ paths:
                 $ref: '#/components/schemas/Error'
   /v1/profiles/{profileId}/directors:
     post:
+      tags:
+        - Profiles
       summary: Add directors
       parameters:
         - name: profileId
@@ -1355,6 +1382,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/Director'
     get:
+      tags:
+        - Profiles
       summary: List directors
       parameters:
         - name: profileId
@@ -1372,6 +1401,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/Director'
     put:
+      tags:
+        - Profiles
       summary: Update directors
       parameters:
         - name: profileId
@@ -1397,6 +1428,8 @@ paths:
                   $ref: '#/components/schemas/Director'
   /v3/profiles/{profileId}/verification-status/bank-transfer:
     post:
+      tags:
+        - Profiles
       summary: Check verification status
       parameters:
         - name: profileId
@@ -1478,6 +1511,8 @@ paths:
         - BearerAuth: [ ]
   /quotes:
     post:
+      tags:
+        - Quotes
       summary: Create an unauthenticated quote
       description: Creates an example quote for illustration purposes. The returned quote cannot be used to create transfers.
       requestBody:
@@ -1497,6 +1532,8 @@ paths:
 
   /profiles/{profileId}/quotes:
     post:
+      tags:
+        - Quotes
       summary: Create an authenticated quote
       description: Creates a quote associated with a profile. Requires user authentication.
       parameters:
@@ -1523,6 +1560,8 @@ paths:
 
   /profiles/{profileId}/quotes/{quoteId}:
     patch:
+      tags:
+        - Quotes
       summary: Update a quote
       description: Updates a quote with recipient information or payment metadata.
       parameters:
@@ -1554,6 +1593,8 @@ paths:
         - BearerAuth: [ ]
 
     get:
+      tags:
+        - Quotes
       summary: Retrieve a quote by ID
       description: Retrieves a quote by its ID. Expired quotes are available for ~48 hours.
       parameters:
@@ -1579,6 +1620,8 @@ paths:
         - BearerAuth: [ ]
   /v1/accounts:
     post:
+      tags:
+        - Recipients
       summary: Create a recipient account
       security:
         - BearerAuth: [ ]
@@ -1598,6 +1641,8 @@ paths:
 
   /v1/refund-accounts:
     post:
+      tags:
+        - Recipients
       summary: Create a refund recipient account
       security:
         - BearerAuth: [ ]
@@ -1635,6 +1680,8 @@ paths:
 
   /v2/accounts:
     get:
+      tags:
+        - Recipients
       summary: List recipient accounts
       security:
         - BearerAuth: [ ]
@@ -1665,6 +1712,8 @@ paths:
 
   /v2/accounts/{accountId}:
     get:
+      tags:
+        - Recipients
       summary: Get recipient account by ID
       security:
         - BearerAuth: [ ]
@@ -1682,6 +1731,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Recipient'
     delete:
+      tags:
+        - Recipients
       summary: Deactivate a recipient account
       security:
         - BearerAuth: [ ]
@@ -1701,6 +1752,8 @@ paths:
 
   /v1/quotes/{quoteId}/account-requirements:
     get:
+      tags:
+        - Recipients
       summary: Get account requirements for a quote
       security:
         - BearerAuth: [ ]
@@ -1731,6 +1784,8 @@ paths:
                 $ref: "#/components/schemas/AccountRequirements"
   /v1/transfers:
     post:
+      tags:
+        - Transfers
       summary: Create a standard transfer
       requestBody:
         required: true
@@ -1749,6 +1804,8 @@ paths:
         - BearerAuth: [ ]
 
     get:
+      tags:
+        - Transfers
       summary: List transfers
       parameters:
         - $ref: '#/components/parameters/profile'
@@ -1775,6 +1832,8 @@ paths:
 
   /v1/transfers/{transferId}:
     get:
+      tags:
+        - Transfers
       summary: Get transfer by ID
       parameters:
         - $ref: '#/components/parameters/transferId'
@@ -1791,6 +1850,8 @@ paths:
         - BearerAuth: [ ]
 
     put:
+      tags:
+        - Transfers
       summary: Cancel transfer
       parameters:
         - $ref: '#/components/parameters/transferId'
@@ -1808,6 +1869,8 @@ paths:
 
   /v1/transfers/{transferId}/receipt.pdf:
     get:
+      tags:
+        - Transfers
       summary: Get transfer receipt PDF
       parameters:
         - $ref: '#/components/parameters/transferId'
@@ -1824,6 +1887,8 @@ paths:
 
   /v1/transfers/{transferId}/documents/noc:
     get:
+      tags:
+        - Transfers
       summary: Get NOC document
       parameters:
         - $ref: '#/components/parameters/transferId'
@@ -1840,6 +1905,8 @@ paths:
 
   /v1/transfers/{transferId}/invoices/bankingpartner:
     get:
+      tags:
+        - Transfers
       summary: Get banking partner invoice (v1)
       parameters:
         - $ref: '#/components/parameters/transferId'
@@ -1855,6 +1922,8 @@ paths:
 
   /v2/transfers/{transferId}/invoices/bankingpartner:
     get:
+      tags:
+        - Transfers
       summary: Get banking partner invoice (v2)
       parameters:
         - $ref: '#/components/parameters/transferId'
@@ -1870,6 +1939,8 @@ paths:
 
   /v1/transfers/{transferId}/payments:
     get:
+      tags:
+        - Transfers
       summary: List transfer payments
       parameters:
         - $ref: '#/components/parameters/transferId'
@@ -1885,6 +1956,8 @@ paths:
 
   /v2/profiles/{profileId}/third-party-transfers:
     post:
+      tags:
+        - Transfers
       summary: Create third-party transfer
       parameters:
         - $ref: '#/components/parameters/profileId'
@@ -1906,6 +1979,8 @@ paths:
 
   /v2/profiles/{profileId}/third-party-transfers/{transferId}:
     get:
+      tags:
+        - Transfers
       summary: Get third-party transfer
       parameters:
         - $ref: '#/components/parameters/profileId'
@@ -1922,6 +1997,8 @@ paths:
 
   /v1/profiles/{profileId}/partner-licence-transfers:
     post:
+      tags:
+        - Transfers
       summary: Create partner license transfer
       parameters:
         - $ref: '#/components/parameters/profileId'
@@ -1943,6 +2020,8 @@ paths:
 
   /v1/transfer-requirements:
     post:
+      tags:
+        - Transfers
       summary: Get transfer requirements
       requestBody:
         required: true
@@ -1962,6 +2041,8 @@ paths:
 
   /v3/profiles/{profileId}/transfers/{transferId}/payments:
     post:
+      tags:
+        - Transfers
       summary: Fund a transfer
       parameters:
         - $ref: '#/components/parameters/profileId'
