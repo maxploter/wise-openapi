@@ -9,6 +9,11 @@ info:
     - Quote creation and management
     - Recipient
     - Transfer
+  contact:
+    name: Max Ploter
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
 servers:
   - url: https://api.sandbox.transferwise.tech
 tags:
