@@ -468,9 +468,6 @@ components:
           nullable: true
         pricingConfiguration:
           $ref: '#/components/schemas/PricingConfiguration'
-      oneOf:
-        - required: [ sourceAmount ]
-        - required: [ targetAmount ]
 
     CreateAuthenticatedQuoteRequest:
       type: object
@@ -502,9 +499,6 @@ components:
         pricingConfiguration:
           $ref: '#/components/schemas/PricingConfiguration'
           nullable: true
-      oneOf:
-        - required: [ sourceAmount ]
-        - required: [ targetAmount ]
 
     UpdateQuoteRequest:
       type: object
@@ -1515,7 +1509,7 @@ paths:
                 $ref: '#/components/schemas/ActivitiesResponse'
       security:
         - BearerAuth: [ ]
-  /quotes:
+  /v3/quotes:
     post:
       tags:
         - Quotes
@@ -1536,7 +1530,7 @@ paths:
                 $ref: '#/components/schemas/Quote'
       security: [ ]
 
-  /profiles/{profileId}/quotes:
+  /v3/profiles/{profileId}/quotes:
     post:
       tags:
         - Quotes
@@ -1564,7 +1558,7 @@ paths:
       security:
         - BearerAuth: [ ]
 
-  /profiles/{profileId}/quotes/{quoteId}:
+  /v3/profiles/{profileId}/quotes/{quoteId}:
     patch:
       tags:
         - Quotes
