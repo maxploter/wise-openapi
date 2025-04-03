@@ -29,7 +29,7 @@ jobs:
           path: wise-python # Clone into the 'wise-python' subdirectory
 
       - name: Update spec file in wise-python checkout
-      - run: |
+        run: |
           rm -f ./wise-python/api/spec.yaml
           cp openapi/spec.yaml wise-python/api/spec.yaml
         shell: bash
