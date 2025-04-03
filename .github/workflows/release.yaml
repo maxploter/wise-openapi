@@ -21,4 +21,3 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         body_path: ${{ runner.temp }}/release_notes.md
-        token: ${{ secrets.GITHUB_TOKEN }} # Use the default GITHUB_TOKEN
