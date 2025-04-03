@@ -1,7 +1,7 @@
 name: Publish
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch: { }
   release:
     types:
       - created
@@ -16,50 +16,38 @@ jobs:
     name: Publish spec to wise-python
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout wise-openapi (current repo)
-      uses: actions/checkout@v4
+      - name: Checkout wise-openapi (current repo)
+        uses: actions/checkout@v4
 
-    # Fetch repositories to modify
-    - uses: actions/checkout@v4
-      name: Checkout wise-python (target repo)
-      with:
-        # Use the PAT stored in the GH_PAT secret to access the other repository
-        token: ${{ secrets.GH_PAT }}
-        repository: maxploter/wise-python
-        path: wise-python # Clone into the 'wise-python' subdirectory
+      # Fetch repositories to modify
+      - uses: actions/checkout@v4
+        name: Checkout wise-python (target repo)
+        with:
+          # Use the PAT stored in the GH_PAT secret to access the other repository
+          token: ${{ secrets.GH_PAT }}
+          repository: maxploter/wise-python
+          path: wise-python # Clone into the 'wise-python' subdirectory
 
-    - name: Update spec file in wise-python checkout
-    - run: |
-        rm -f ./wise-python/api/spec.yaml
-        cp openapi/spec.yaml wise-python/api/spec.yaml
-      shell: bash
+      - name: Update spec file in wise-python checkout
+      - run: |
+          rm -f ./wise-python/api/spec.yaml
+          cp openapi/spec.yaml wise-python/api/spec.yaml
+        shell: bash
 
-    - name: Create Pull Request on wise-python
-      id: cpr
-      uses: peter-evans/create-pull-request@v6
-      with:
-        path: wise-python # Operate within the checked-out 'wise-python' directory
-        title: OpenAPI Update
-        body: |
-          Automated OpenAPI update for https://github.com/maxploter/wise-openapi/commit/${{ github.sha }}
-
-          [→ Debug this workflow](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}})
-        branch: update-openapi # Name of the branch to create in wise-python
-        # Use the PAT stored in GH_PAT secret for pushing the branch and creating the PR
-        token: ${{ secrets.GH_PAT }}
-        delete-branch: true # Delete the branch after the PR is merged/closed
-        commit-message: Update OpenAPI for ${{ github.sha }}
-        committer: "Wise OpenAPI <wise-openapi[bot]@users.noreply.github.com>"
-        author: "Wise OpenAPI <wise-openapi[bot]@users.noreply.github.com>"
-
-    # NOTE: The following step depends on a step with id 'gh-api-token' which is not present.
-    # This step likely needs to generate a GitHub App installation token using the App ID and Private Key.
-    # You might need to add an action like 'actions/create-github-app-token' before this step.
-    - uses: ./actions/enable-auto-merge
-      name: Enable auto-merge for wise-python PR
-      if: ${{ steps.cpr.outputs.pull-request-url != '' }}
-      with:
-        pr_url: "${{ steps.cpr.outputs.pull-request-url }}"
-        # This likely needs a token generated from your GitHub App, not the PAT or default GITHUB_TOKEN
-        github_token: ${{ steps.gh-api-token.outputs.token }} # Placeholder - needs the actual token generation step added
-        repo: maxploter/wise-python
+      - name: Create Pull Request on wise-python
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          path: wise-python # Operate within the checked-out 'wise-python' directory
+          title: OpenAPI Update
+          body: |
+            Automated OpenAPI update for https://github.com/maxploter/wise-openapi/commit/${{ github.sha }}
+            
+            [→ Debug this workflow](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}})
+          branch: update-openapi # Name of the branch to create in wise-python
+          # Use the PAT stored in GH_PAT secret for pushing the branch and creating the PR
+          token: ${{ secrets.GH_PAT }}
+          delete-branch: true # Delete the branch after the PR is merged/closed
+          commit-message: Update OpenAPI for ${{ github.sha }}
+          committer: "Wise OpenAPI <wise-openapi[bot]@users.noreply.github.com>"
+          author: "Wise OpenAPI <wise-openapi[bot]@users.noreply.github.com>"

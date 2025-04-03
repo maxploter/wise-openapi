@@ -1,27 +1,27 @@
 name: Release
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch: { }
   push:
     tags:
       - v[0-9]+
 
 permissions:
-  contents: write  # Required for creating releases
+  contents: write
 
 jobs:
   release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Extract tag message
-      run: |
-        git fetch --tags --force
-        echo "$(git tag -l --format='%(contents:body)' ${{ github.ref_name }})" > "${{ runner.temp }}/release_notes.md"
+      - uses: actions/checkout@v2
+      - name: Extract tag message
+        run: |
+          git fetch --tags --force
+          echo "$(git tag -l --format='%(contents:body)' ${{ github.ref_name }})" > "${{ runner.temp }}/release_notes.md"
 
-    - name: Release
-      uses: softprops/action-gh-release@v1
-      with:
-        body_path: ${{ runner.temp }}/release_notes.md
-        token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: ${{ runner.temp }}/release_notes.md
+          token: ${{ secrets.GITHUB_TOKEN }}
