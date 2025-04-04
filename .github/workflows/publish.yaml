@@ -1,13 +1,9 @@
 name: Publish
 
 on:
-  workflow_dispatch: { }
   release:
     types:
       - created
-  push:
-    branches:
-      - main
 
 jobs:
   # Trigger generated code updates only after a release was created
@@ -28,13 +24,19 @@ jobs:
           repository: maxploter/wise-python
           path: wise-python # Clone into the 'wise-python' subdirectory
 
-      - name: Update spec file in wise-python checkout
+      - name: Check for changes
+        id: check_changes
         run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
           rm -f ./wise-python/api/spec.yaml
           cp openapi/spec.yaml wise-python/api/spec.yaml
+          git add ./wise-python/api/spec.yaml
+          git diff --staged --quiet && echo "::set-output name=has_changes::false" || echo "::set-output name=has_changes::true"
         shell: bash
 
       - name: Create Pull Request on wise-python
+        if: steps.check_changes.outputs.has_changes == 'true'
         id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
@@ -42,7 +44,7 @@ jobs:
           title: OpenAPI Update
           body: |
             Automated OpenAPI update for https://github.com/maxploter/wise-openapi/commit/${{ github.sha }}
-            
+
             [→ Debug this workflow](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}})
           branch: update-openapi # Name of the branch to create in wise-python
           # Use the PAT stored in GH_PAT secret for pushing the branch and creating the PR
