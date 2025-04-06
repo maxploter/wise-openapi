@@ -25,3 +25,4 @@ jobs:
         with:
           body_path: ${{ runner.temp }}/release_notes.md
           token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ github.ref_name }}
