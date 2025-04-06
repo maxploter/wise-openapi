@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Wise Platform API
-  version: 0.0.2
+  version: 0.0.3
   description: |
     Comprehensive API for Wise platform services including:
     - Profile
@@ -1549,7 +1549,7 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateAuthenticatedQuoteRequest'
       responses:
-        '201':
+        '200':
           description: Successfully created authenticated quote
           content:
             application/json:
