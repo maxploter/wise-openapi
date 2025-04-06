@@ -456,8 +456,14 @@ components:
       properties:
         sourceCurrency:
           type: string
+          description: "The source currency code (ISO 4217)."
+          pattern: '^[A-Z]{3}$'
+          example: "GBP"
         targetCurrency:
           type: string
+          description: "The target currency code (ISO 4217)."
+          pattern: '^[A-Z]{3}$'
+          example: "EUR"
         sourceAmount:
           type: number
           format: double
