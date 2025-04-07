@@ -41,7 +41,7 @@ jobs:
           cp openapi/spec.yaml wise-python/api/spec.yaml
           
           cd wise-python
-          git add wise-python/api/spec.yaml
+          git add ./api/spec.yaml
           if git diff --staged --quiet; then
             echo "No changes detected by git"
             echo "has_changes=false" >> $GITHUB_OUTPUT
