@@ -32,12 +32,21 @@ jobs:
           chmod 644 openapi/spec.yaml
           chmod 755 wise-python/api
           chmod 644 wise-python/api/spec.yaml
+          
+          # Add debugging to see differences
+          echo "Comparing files..."
+          diff -u wise-python/api/spec.yaml openapi/spec.yaml || true
+          
           rm -f ./wise-python/api/spec.yaml
           cp openapi/spec.yaml wise-python/api/spec.yaml
+          
+          cd wise-python
           git add wise-python/api/spec.yaml
           if git diff --staged --quiet; then
+            echo "No changes detected by git"
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
+            echo "Changes detected"
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
         shell: bash
