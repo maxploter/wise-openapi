@@ -29,10 +29,14 @@ jobs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
-          rm -f ./wise-python/api/spec.yaml
-          cp openapi/spec.yaml wise-python/api/spec.yaml
-          git add ./wise-python/api/spec.yaml
-          git diff --staged --quiet && echo "::set-output name=has_changes::false" || echo "::set-output name=has_changes::true"
+          rm -f `./wise-python/api/spec.yaml`
+          cp `openapi/spec.yaml` `wise-python/api/spec.yaml`
+          git add `./wise-python/api/spec.yaml`
+          if git diff --staged --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
         shell: bash
 
       - name: Create Pull Request on wise-python
