@@ -27,14 +27,14 @@ jobs:
       - name: Check for changes
         id: check_changes
         run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
-          chmod 644 `openapi/spec.yaml`
-          chmod 644 `wise-python/api/spec.yaml`
-          chmod 644 `wise-python/api`
-          rm -f `./wise-python/api/spec.yaml`
-          cp `openapi/spec.yaml` `wise-python/api/spec.yaml`
-          git add `./wise-python/api/spec.yaml`
+          git config --local user.email actions@github.com
+          git config --local user.name GitHub Actions
+          chmod 644 openapi/spec.yaml
+          chmod 644 wise-python/api/spec.yaml
+          chmod 644 wise-python/api
+          rm -f ./wise-python/api/spec.yaml
+          cp openapi/spec.yaml wise-python/api/spec.yaml
+          git add wise-python/api/spec.yaml
           if git diff --staged --quiet; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
