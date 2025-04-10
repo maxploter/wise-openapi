@@ -1226,6 +1226,7 @@ paths:
       tags:
         - Profiles
       summary: Update a personal profile
+      operationId: updatePersonalProfile
       parameters:
         - name: profileId
           in: path
@@ -1257,6 +1258,7 @@ paths:
       tags:
         - Profiles
       summary: Update a business profile
+      operationId: updateBusinessProfile
       parameters:
         - name: profileId
           in: path
@@ -1286,6 +1288,7 @@ paths:
       tags:
         - Profiles
       summary: Retrieve a profile by ID
+      operationId: getProfileById
       parameters:
         - name: profileId
           in: path
@@ -1306,6 +1309,7 @@ paths:
       tags:
         - Profiles
       summary: List profiles for a user account
+      operationId: listProfiles
       responses:
         '200':
           description: List of profiles
@@ -1327,6 +1331,7 @@ paths:
       tags:
         - Profiles
       summary: Create identification document
+      operationId: createVerificationDocument
       parameters:
         - name: profileId
           in: path
@@ -1359,6 +1364,7 @@ paths:
       tags:
         - Profiles
       summary: Add directors
+      operationId: addDirectors
       parameters:
         - name: profileId
           in: path
@@ -1385,6 +1391,7 @@ paths:
       tags:
         - Profiles
       summary: List directors
+      operationId: listDirectors
       parameters:
         - name: profileId
           in: path
@@ -1404,6 +1411,7 @@ paths:
       tags:
         - Profiles
       summary: Update directors
+      operationId: updateDirectors
       parameters:
         - name: profileId
           in: path
@@ -1431,6 +1439,7 @@ paths:
       tags:
         - Profiles
       summary: Check verification status
+      operationId: checkVerificationStatus
       parameters:
         - name: profileId
           in: path
@@ -1458,6 +1467,7 @@ paths:
         - Activities
       summary: List activities for a profile
       description: Retrieve paginated list of activities for a user profile with filtering options
+      operationId: listActivities
       parameters:
         - name: profileId
           in: path
@@ -1515,6 +1525,7 @@ paths:
         - Quotes
       summary: Create an unauthenticated quote
       description: Creates an example quote for illustration purposes. The returned quote cannot be used to create transfers.
+      operationId: createUnauthenticatedQuote
       requestBody:
         required: true
         content:
@@ -1536,6 +1547,7 @@ paths:
         - Quotes
       summary: Create an authenticated quote
       description: Creates a quote associated with a profile. Requires user authentication.
+      operationId: createAuthenticatedQuote
       parameters:
         - name: profileId
           in: path
@@ -1564,6 +1576,7 @@ paths:
         - Quotes
       summary: Update a quote
       description: Updates a quote with recipient information or payment metadata.
+      operationId: updateQuote
       parameters:
         - name: profileId
           in: path
@@ -1597,6 +1610,7 @@ paths:
         - Quotes
       summary: Retrieve a quote by ID
       description: Retrieves a quote by its ID. Expired quotes are available for ~48 hours.
+      operationId: getQuoteById
       parameters:
         - name: profileId
           in: path
@@ -1623,6 +1637,7 @@ paths:
       tags:
         - Recipients
       summary: Create a recipient account
+      operationId: createRecipientAccount
       security:
         - BearerAuth: [ ]
       requestBody:
@@ -1644,6 +1659,7 @@ paths:
       tags:
         - Recipients
       summary: Create a refund recipient account
+      operationId: createRefundRecipientAccount
       security:
         - BearerAuth: [ ]
       requestBody:
@@ -1683,6 +1699,7 @@ paths:
       tags:
         - Recipients
       summary: List recipient accounts
+      operationId: listRecipientAccounts
       security:
         - BearerAuth: [ ]
       parameters:
@@ -1715,6 +1732,7 @@ paths:
       tags:
         - Recipients
       summary: Get recipient account by ID
+      operationId: getRecipientAccountById
       security:
         - BearerAuth: [ ]
       parameters:
@@ -1734,6 +1752,7 @@ paths:
       tags:
         - Recipients
       summary: Deactivate a recipient account
+      operationId: deactivateRecipientAccount
       security:
         - BearerAuth: [ ]
       parameters:
@@ -1755,6 +1774,7 @@ paths:
       tags:
         - Recipients
       summary: Get account requirements for a quote
+      operationId: getAccountRequirements
       security:
         - BearerAuth: [ ]
       parameters:
@@ -1787,6 +1807,7 @@ paths:
       tags:
         - Transfers
       summary: Create a standard transfer
+      operationId: createTransfer
       requestBody:
         required: true
         content:
@@ -1807,6 +1828,7 @@ paths:
       tags:
         - Transfers
       summary: List transfers
+      operationId: listTransfers
       parameters:
         - $ref: '#/components/parameters/profile'
         - $ref: '#/components/parameters/status'
@@ -1835,6 +1857,7 @@ paths:
       tags:
         - Transfers
       summary: Get transfer by ID
+      operationId: getTransferById
       parameters:
         - $ref: '#/components/parameters/transferId'
       responses:
@@ -1853,6 +1876,7 @@ paths:
       tags:
         - Transfers
       summary: Cancel transfer
+      operationId: cancelTransfer
       parameters:
         - $ref: '#/components/parameters/transferId'
       responses:
@@ -1872,6 +1896,7 @@ paths:
       tags:
         - Transfers
       summary: Get transfer receipt PDF
+      operationId: getTransferReceipt
       parameters:
         - $ref: '#/components/parameters/transferId'
       responses:
@@ -1890,6 +1915,7 @@ paths:
       tags:
         - Transfers
       summary: Get NOC document
+      operationId: getNocDocument
       parameters:
         - $ref: '#/components/parameters/transferId'
       responses:
@@ -1903,28 +1929,12 @@ paths:
       security:
         - BearerAuth: [ ]
 
-  /v1/transfers/{transferId}/invoices/bankingpartner:
-    get:
-      tags:
-        - Transfers
-      summary: Get banking partner invoice (v1)
-      parameters:
-        - $ref: '#/components/parameters/transferId'
-      responses:
-        '200':
-          description: Banking partner invoice details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BankingPartnerInvoice'
-      security:
-        - BearerAuth: [ ]
-
   /v2/transfers/{transferId}/invoices/bankingpartner:
     get:
       tags:
         - Transfers
       summary: Get banking partner invoice (v2)
+      operationId: getBankingPartnerInvoice
       parameters:
         - $ref: '#/components/parameters/transferId'
       responses:
@@ -1942,6 +1952,7 @@ paths:
       tags:
         - Transfers
       summary: List transfer payments
+      operationId: listTransferPayments
       parameters:
         - $ref: '#/components/parameters/transferId'
       responses:
@@ -1959,6 +1970,7 @@ paths:
       tags:
         - Transfers
       summary: Create third-party transfer
+      operationId: createThirdPartyTransfer
       parameters:
         - $ref: '#/components/parameters/profileId'
       requestBody:
@@ -1982,6 +1994,7 @@ paths:
       tags:
         - Transfers
       summary: Get third-party transfer
+      operationId: getThirdPartyTransfer
       parameters:
         - $ref: '#/components/parameters/profileId'
         - $ref: '#/components/parameters/transferId'
@@ -1999,7 +2012,8 @@ paths:
     post:
       tags:
         - Transfers
-      summary: Create partner license transfer
+      summary: Create partner license
+      operationId: createPartnerLicenceTransfer
       parameters:
         - $ref: '#/components/parameters/profileId'
       requestBody:
@@ -2023,6 +2037,7 @@ paths:
       tags:
         - Transfers
       summary: Get transfer requirements
+      operationId: calculateTransferRequirements
       requestBody:
         required: true
         content:
@@ -2044,6 +2059,7 @@ paths:
       tags:
         - Transfers
       summary: Fund a transfer
+      operationId: fundTransfer
       parameters:
         - $ref: '#/components/parameters/profileId'
         - $ref: '#/components/parameters/transferId'
