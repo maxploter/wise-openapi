@@ -1,0 +1,21 @@
+name: Build
+
+on:
+  workflow_dispatch: { }  # Allow manual triggering on any branch
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Placeholder - actual tests will be added later
+  api-test:
+    name: Run API Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: schemathesis/action@v1
+        with:
+          schema: 'openapi/spec.yaml'
+          base-url: 'https://api.sandbox.transferwise.tech'
+          args: '-H "Authorization: Bearer ${{ secrets.API_TOKEN }}"'
