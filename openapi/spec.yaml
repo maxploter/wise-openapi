@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Wise Platform API
-  version: 0.0.4
+  version: 0.1.0
   description: |
     Comprehensive API for Wise platform services including:
     - Profile
@@ -600,38 +600,39 @@ components:
         - type
         - profile
         - accountHolderName
-        - details
       properties:
         currency:
           type: string
-          example: GBP
+          description: "3 character currency code for the recipient's account."
+          example: 'GBP'
         type:
           type: string
-          example: sort_code
+          description: "The type of recipient account, determined from the account requirements."
+          example: 'sort_code'
         profile:
           type: integer
+          description: "The profile ID that the recipient will be created under."
           example: 30000000
         accountHolderName:
           type: string
-          example: John Doe
-        ownedByCustomer:
-          type: boolean
+          description: "The recipient's full name."
+          example: 'John Doe'
+      additionalProperties: true
+      description: "Beyond the required fields, this object accepts a dynamic set of properties based on the response from the `/v1/quotes/{quoteId}/account-requirements` endpoint. This can include simple fields or nested objects like 'details' and 'address' when required for a specific currency route."
+      example:
+        currency: "GBP"
+        type": "sort_code"
+        profile: 30000000
+        accountHolderName: "John Doe"
         details:
-          type: object
-          required:
-            - legalType
-          properties:
-            legalType:
-              type: string
-              enum: [PRIVATE, BUSINESS]
-            sortCode:
-              type: string
-            accountNumber:
-              type: string
-            dateOfBirth:
-              type: string
-              format: date
-              example: "1961-01-01"
+          legalType: "PRIVATE"
+          sortCode": "040075"
+          accountNumber: "37778842"
+        address:
+          country: "GB"
+          city: "London"
+          postCode: "E14 5LQ"
+          firstLine: "One Canada Square"
 
     PaginatedRecipients:
       type: object
