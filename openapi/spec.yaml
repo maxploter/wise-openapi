@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Wise Platform API
-  version: 0.1.1
+  version: 0.2.0
   description: |
     Comprehensive API for Wise platform services including:
     - Profile
@@ -1795,6 +1795,11 @@ paths:
             enum:
               - BUSINESS
               - PRIVATE
+        - name: addressRequired
+          in: query
+          schema:
+            type: boolean
+          description: "Set to true to force the address fields to be returned as required."
         - name: Accept-Minor-Version
           in: header
           schema:
@@ -1807,6 +1812,52 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AccountRequirements"
+    post:
+      tags:
+        - Recipients
+      summary: Get refined account requirements for a quote
+      description: "Use this endpoint to get additional requirements that may appear after a user provides certain information. For example, after selecting a country that has states, this endpoint will return the list of states. The request body should contain the recipient information collected so far."
+      operationId: getRefinedAccountRequirements
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: quoteId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: "The ID of the quote."
+        - name: originatorLegalEntityType
+          in: query
+          schema:
+            type: string
+            enum: [ BUSINESS, PRIVATE ]
+          description: "The legal entity type of the sender. Required for some routes when the sender is a third party."
+        - name: addressRequired
+          in: query
+          schema:
+            type: boolean
+          description: "Set to true to always include address fields in the response."
+        - name: Accept-Minor-Version
+          in: header
+          schema:
+            type: string
+            default: "1"
+          description: "Set to '1' to use version 1.1 which includes dynamic fields for name and email."
+      requestBody:
+        description: "A partial or complete recipient object based on the requirements you have already received."
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRecipientRequest'
+      responses:
+        '200':
+          description: "Successfully retrieved refined account requirements."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountRequirements'
   /v1/transfers:
     post:
       tags:
