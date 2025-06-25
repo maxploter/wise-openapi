@@ -381,6 +381,10 @@ components:
 
     FeeConfiguration:
       type: object
+      required:
+        - type
+        - variable
+        - fixed
       properties:
         type:
           type: string
@@ -400,8 +404,10 @@ components:
         estimatedDelivery:
           type: string
           format: date-time
+          nullable: true
         formattedEstimatedDelivery:
           type: string
+          nullable: true
         fee:
           $ref: '#/components/schemas/FeeDetails'
         price:
@@ -456,18 +462,33 @@ components:
       properties:
         sourceCurrency:
           type: string
+          example: GBP
+          pattern: '^[A-Z]{3}$'
+          minLength: 3
+          maxLength: 3
         targetCurrency:
           type: string
-        sourceAmount:
-          type: number
-          format: double
-          nullable: true
-        targetAmount:
-          type: number
-          format: double
-          nullable: true
+          example: EUR
+          pattern: '^[A-Z]{3}$'
+          minLength: 3
+          maxLength: 3
         pricingConfiguration:
           $ref: '#/components/schemas/PricingConfiguration'
+      oneOf:
+        - required: [ sourceAmount ]
+          properties:
+            sourceAmount:
+              type: number
+              format: double
+              description: "The amount in the source currency. Must be greater than 0."
+              exclusiveMinimum: 0
+        - required: [ targetAmount ]
+          properties:
+            targetAmount:
+              type: number
+              format: double
+              description: "The amount in the target currency. Must be greater than 0."
+              exclusiveMinimum: 0
 
     CreateAuthenticatedQuoteRequest:
       type: object
@@ -477,16 +498,16 @@ components:
       properties:
         sourceCurrency:
           type: string
+          example: GBP
+          pattern: '^[A-Z]{3}$'
+          minLength: 3
+          maxLength: 3
         targetCurrency:
           type: string
-        sourceAmount:
-          type: number
-          format: double
-          nullable: true
-        targetAmount:
-          type: number
-          format: double
-          nullable: true
+          example: EUR
+          pattern: '^[A-Z]{3}$'
+          minLength: 3
+          maxLength: 3
         targetAccount:
           type: integer
           nullable: true
@@ -498,7 +519,21 @@ components:
           nullable: true
         pricingConfiguration:
           $ref: '#/components/schemas/PricingConfiguration'
-          nullable: true
+      oneOf:
+        - required: [ sourceAmount ]
+          properties:
+            sourceAmount:
+              type: number
+              format: double
+              description: "The amount in the source currency. Must be greater than 0."
+              exclusiveMinimum: 0
+        - required: [ targetAmount ]
+          properties:
+            targetAmount:
+              type: number
+              format: double
+              description: "The amount in the target currency. Must be greater than 0."
+              exclusiveMinimum: 0
 
     UpdateQuoteRequest:
       type: object
@@ -1544,6 +1579,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Quote'
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
       security: [ ]
 
   /v3/profiles/{profileId}/quotes:
@@ -1572,6 +1611,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Quote'
+          links:
+            GetQuoteById:
+              operationId: getQuoteById
+              parameters:
+                quoteId: '$response.body#/id'
+                profileId: '$request.path.profileId'
+            UpdateQuote:
+              operationId: updateQuote
+              parameters:
+                quoteId: '$response.body#/id'
+                profileId: '$request.path.profileId'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Quote not found
+        '500':
+          description: Internal Server Error
       security:
         - BearerAuth: [ ]
 
@@ -1607,6 +1667,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Quote'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Quote not found
+        '500':
+          description: Internal Server Error
       security:
         - BearerAuth: [ ]
 
@@ -1635,6 +1703,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Quote'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Quote not found
+        '500':
+          description: Internal Server Error
       security:
         - BearerAuth: [ ]
   /v1/accounts:
