@@ -510,7 +510,10 @@ components:
           maxLength: 3
         targetAccount:
           type: integer
+          format: int64
+          minimum: 0
           nullable: true
+          description: "The ID of the recipient's account. This ID must exist in the system."
         paymentMetadata:
           type: object
           properties:
@@ -540,6 +543,8 @@ components:
       properties:
         targetAccount:
           type: integer
+          format: int64
+          minimum: 0
         payOut:
           type: string
         paymentMetadata:
@@ -715,8 +720,10 @@ components:
                         type: boolean
                       validationRegexp:
                         type: string
+                        nullable: true
                       valuesAllowed:
                         type: array
+                        nullable: true
                         items:
                           type: object
                           properties:
@@ -1172,393 +1179,393 @@ components:
 security:
   - BearerAuth: [ ]
 paths:
-  /v2/profiles/personal-profile:
-    post:
-      tags:
-        - Profiles
-      summary: Create a personal profile
-      operationId: createPersonalProfile
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - firstName
-                - lastName
-                - address
-                - nationality
-                - dateOfBirth
-                - contactDetails
-              properties:
-                firstName:
-                  type: string
-                  maxLength: 30
-                lastName:
-                  type: string
-                  maxLength: 30
-                address:
-                  type: object
-                  required:
-                    - addressFirstLine
-                    - city
-                    - countryIso3Code
-                  properties:
-                    addressFirstLine:
-                      type: string
-                    city:
-                      type: string
-                    countryIso3Code:
-                      type: string
-                contactDetails:
-                  type: object
-                  required:
-                    - email
-                    - phoneNumber
-                  properties:
-                    email:
-                      type: string
-                      format: email
-                    phoneNumber:
-                      type: string
-      responses:
-        '200':
-          description: Personal profile created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PersonalProfile'
-  /v2/profiles/business-profile:
-    post:
-      tags:
-        - Profiles
-      summary: Create a business profile
-      operationId: createBusinessProfile
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - businessName
-                - registrationNumber
-                - companyType
-                - address
-              properties:
-                businessName:
-                  type: string
-                registrationNumber:
-                  type: string
-                companyType:
-                  type: string
-                  enum: [ "LIMITED", "PARTNERSHIP", ... ]
-      responses:
-        '200':
-          description: Business profile created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BusinessProfile'
-  /v2/profiles/{profileId}/personal-profile:
-    put:
-      tags:
-        - Profiles
-      summary: Update a personal profile
-      operationId: updatePersonalProfile
-      parameters:
-        - name: profileId
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                firstName:
-                  type: string
-                  maxLength: 30
-                lastName:
-                  type: string
-                  maxLength: 30
-      responses:
-        '200':
-          description: Personal profile updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PersonalProfile'
-  /v2/profiles/{profileId}/business-profile:
-    put:
-      tags:
-        - Profiles
-      summary: Update a business profile
-      operationId: updateBusinessProfile
-      parameters:
-        - name: profileId
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                businessName:
-                  type: string
-                registrationNumber:
-                  type: string
-      responses:
-        '200':
-          description: Business profile updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BusinessProfile'
-  /v2/profiles/{profileId}:
-    get:
-      tags:
-        - Profiles
-      summary: Retrieve a profile by ID
-      operationId: getProfileById
-      parameters:
-        - name: profileId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Profile details
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/PersonalProfile'
-                  - $ref: '#/components/schemas/BusinessProfile'
-  /v2/profiles:
-    get:
-      tags:
-        - Profiles
-      summary: List profiles for a user account
-      operationId: listProfiles
-      responses:
-        '200':
-          description: List of profiles
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  oneOf:
-                    - $ref: '#/components/schemas/PersonalProfile'
-                    - $ref: '#/components/schemas/BusinessProfile'
-                  discriminator:
-                    propertyName: type
-                    mapping:
-                      PERSONAL: '#/components/schemas/PersonalProfile'
-                      BUSINESS: '#/components/schemas/BusinessProfile'
-  /v1/profiles/{profileId}/verification-documents:
-    post:
-      tags:
-        - Profiles
-      summary: Create identification document
-      operationId: createVerificationDocument
-      parameters:
-        - name: profileId
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - type
-                - uniqueIdentifier
-              properties:
-                type:
-                  type: string
-                  enum: [ "DRIVERS_LICENCE", "IDENTITY_CARD", ... ]
-                uniqueIdentifier:
-                  type: string
-      responses:
-        '200':
-          description: Document created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /v1/profiles/{profileId}/directors:
-    post:
-      tags:
-        - Profiles
-      summary: Add directors
-      operationId: addDirectors
-      parameters:
-        - name: profileId
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Director'
-      responses:
-        '200':
-          description: Directors added
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Director'
-    get:
-      tags:
-        - Profiles
-      summary: List directors
-      operationId: listDirectors
-      parameters:
-        - name: profileId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: List of directors
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Director'
-    put:
-      tags:
-        - Profiles
-      summary: Update directors
-      operationId: updateDirectors
-      parameters:
-        - name: profileId
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Director'
-      responses:
-        '200':
-          description: Directors updated
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Director'
-  /v3/profiles/{profileId}/verification-status/bank-transfer:
-    post:
-      tags:
-        - Profiles
-      summary: Check verification status
-      operationId: checkVerificationStatus
-      parameters:
-        - name: profileId
-          in: path
-          required: true
-          schema:
-            type: integer
-        - name: source_currencies
-          in: query
-          required: true
-          schema:
-            type: array
-            items:
-              type: string
-      responses:
-        '200':
-          description: Verification status
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VerificationStatusResponse'
-
-  /v1/profiles/{profileId}/activities:
-    get:
-      tags:
-        - Activities
-      summary: List activities for a profile
-      description: Retrieve paginated list of activities for a user profile with filtering options
-      operationId: listActivities
-      parameters:
-        - name: profileId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: ID of the user profile
-        - name: monetaryResourceType
-          in: query
-          schema:
-            $ref: '#/components/schemas/ActivityResourceType'
-          description: Filter by resource type
-        - name: status
-          in: query
-          schema:
-            $ref: '#/components/schemas/ActivityStatus'
-          description: Filter by activity status
-        - name: since
-          in: query
-          schema:
-            type: string
-            format: date-time
-          description: Filter activities created after this timestamp
-        - name: until
-          in: query
-          schema:
-            type: string
-            format: date-time
-          description: Filter activities created before this timestamp
-        - name: nextCursor
-          in: query
-          schema:
-            type: string
-          description: Pagination cursor for next page
-        - name: size
-          in: query
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 10
-          description: Number of results per page
-      responses:
-        '200':
-          description: Successful response with activities
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ActivitiesResponse'
-      security:
-        - BearerAuth: [ ]
+#  /v2/profiles/personal-profile:
+#    post:
+#      tags:
+#        - Profiles
+#      summary: Create a personal profile
+#      operationId: createPersonalProfile
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              type: object
+#              required:
+#                - firstName
+#                - lastName
+#                - address
+#                - nationality
+#                - dateOfBirth
+#                - contactDetails
+#              properties:
+#                firstName:
+#                  type: string
+#                  maxLength: 30
+#                lastName:
+#                  type: string
+#                  maxLength: 30
+#                address:
+#                  type: object
+#                  required:
+#                    - addressFirstLine
+#                    - city
+#                    - countryIso3Code
+#                  properties:
+#                    addressFirstLine:
+#                      type: string
+#                    city:
+#                      type: string
+#                    countryIso3Code:
+#                      type: string
+#                contactDetails:
+#                  type: object
+#                  required:
+#                    - email
+#                    - phoneNumber
+#                  properties:
+#                    email:
+#                      type: string
+#                      format: email
+#                    phoneNumber:
+#                      type: string
+#      responses:
+#        '200':
+#          description: Personal profile created
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/PersonalProfile'
+#  /v2/profiles/business-profile:
+#    post:
+#      tags:
+#        - Profiles
+#      summary: Create a business profile
+#      operationId: createBusinessProfile
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              type: object
+#              required:
+#                - businessName
+#                - registrationNumber
+#                - companyType
+#                - address
+#              properties:
+#                businessName:
+#                  type: string
+#                registrationNumber:
+#                  type: string
+#                companyType:
+#                  type: string
+#                  enum: [ "LIMITED", "PARTNERSHIP", ... ]
+#      responses:
+#        '200':
+#          description: Business profile created
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/BusinessProfile'
+#  /v2/profiles/{profileId}/personal-profile:
+#    put:
+#      tags:
+#        - Profiles
+#      summary: Update a personal profile
+#      operationId: updatePersonalProfile
+#      parameters:
+#        - name: profileId
+#          in: path
+#          required: true
+#          schema:
+#            type: integer
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              type: object
+#              properties:
+#                firstName:
+#                  type: string
+#                  maxLength: 30
+#                lastName:
+#                  type: string
+#                  maxLength: 30
+#      responses:
+#        '200':
+#          description: Personal profile updated
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/PersonalProfile'
+#  /v2/profiles/{profileId}/business-profile:
+#    put:
+#      tags:
+#        - Profiles
+#      summary: Update a business profile
+#      operationId: updateBusinessProfile
+#      parameters:
+#        - name: profileId
+#          in: path
+#          required: true
+#          schema:
+#            type: integer
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              type: object
+#              properties:
+#                businessName:
+#                  type: string
+#                registrationNumber:
+#                  type: string
+#      responses:
+#        '200':
+#          description: Business profile updated
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/BusinessProfile'
+#  /v2/profiles/{profileId}:
+#    get:
+#      tags:
+#        - Profiles
+#      summary: Retrieve a profile by ID
+#      operationId: getProfileById
+#      parameters:
+#        - name: profileId
+#          in: path
+#          required: true
+#          schema:
+#            type: integer
+#      responses:
+#        '200':
+#          description: Profile details
+#          content:
+#            application/json:
+#              schema:
+#                oneOf:
+#                  - $ref: '#/components/schemas/PersonalProfile'
+#                  - $ref: '#/components/schemas/BusinessProfile'
+#  /v2/profiles:
+#    get:
+#      tags:
+#        - Profiles
+#      summary: List profiles for a user account
+#      operationId: listProfiles
+#      responses:
+#        '200':
+#          description: List of profiles
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  oneOf:
+#                    - $ref: '#/components/schemas/PersonalProfile'
+#                    - $ref: '#/components/schemas/BusinessProfile'
+#                  discriminator:
+#                    propertyName: type
+#                    mapping:
+#                      PERSONAL: '#/components/schemas/PersonalProfile'
+#                      BUSINESS: '#/components/schemas/BusinessProfile'
+#  /v1/profiles/{profileId}/verification-documents:
+#    post:
+#      tags:
+#        - Profiles
+#      summary: Create identification document
+#      operationId: createVerificationDocument
+#      parameters:
+#        - name: profileId
+#          in: path
+#          required: true
+#          schema:
+#            type: integer
+#      requestBody:
+#        content:
+#          application/json:
+#            schema:
+#              type: object
+#              required:
+#                - type
+#                - uniqueIdentifier
+#              properties:
+#                type:
+#                  type: string
+#                  enum: [ "DRIVERS_LICENCE", "IDENTITY_CARD", ... ]
+#                uniqueIdentifier:
+#                  type: string
+#      responses:
+#        '200':
+#          description: Document created
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/Error'
+#  /v1/profiles/{profileId}/directors:
+#    post:
+#      tags:
+#        - Profiles
+#      summary: Add directors
+#      operationId: addDirectors
+#      parameters:
+#        - name: profileId
+#          in: path
+#          required: true
+#          schema:
+#            type: integer
+#      requestBody:
+#        content:
+#          application/json:
+#            schema:
+#              type: array
+#              items:
+#                $ref: '#/components/schemas/Director'
+#      responses:
+#        '200':
+#          description: Directors added
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: '#/components/schemas/Director'
+#    get:
+#      tags:
+#        - Profiles
+#      summary: List directors
+#      operationId: listDirectors
+#      parameters:
+#        - name: profileId
+#          in: path
+#          required: true
+#          schema:
+#            type: integer
+#      responses:
+#        '200':
+#          description: List of directors
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: '#/components/schemas/Director'
+#    put:
+#      tags:
+#        - Profiles
+#      summary: Update directors
+#      operationId: updateDirectors
+#      parameters:
+#        - name: profileId
+#          in: path
+#          required: true
+#          schema:
+#            type: integer
+#      requestBody:
+#        content:
+#          application/json:
+#            schema:
+#              type: array
+#              items:
+#                $ref: '#/components/schemas/Director'
+#      responses:
+#        '200':
+#          description: Directors updated
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: '#/components/schemas/Director'
+#  /v3/profiles/{profileId}/verification-status/bank-transfer:
+#    post:
+#      tags:
+#        - Profiles
+#      summary: Check verification status
+#      operationId: checkVerificationStatus
+#      parameters:
+#        - name: profileId
+#          in: path
+#          required: true
+#          schema:
+#            type: integer
+#        - name: source_currencies
+#          in: query
+#          required: true
+#          schema:
+#            type: array
+#            items:
+#              type: string
+#      responses:
+#        '200':
+#          description: Verification status
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/VerificationStatusResponse'
+#
+#  /v1/profiles/{profileId}/activities:
+#    get:
+#      tags:
+#        - Activities
+#      summary: List activities for a profile
+#      description: Retrieve paginated list of activities for a user profile with filtering options
+#      operationId: listActivities
+#      parameters:
+#        - name: profileId
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#          description: ID of the user profile
+#        - name: monetaryResourceType
+#          in: query
+#          schema:
+#            $ref: '#/components/schemas/ActivityResourceType'
+#          description: Filter by resource type
+#        - name: status
+#          in: query
+#          schema:
+#            $ref: '#/components/schemas/ActivityStatus'
+#          description: Filter by activity status
+#        - name: since
+#          in: query
+#          schema:
+#            type: string
+#            format: date-time
+#          description: Filter activities created after this timestamp
+#        - name: until
+#          in: query
+#          schema:
+#            type: string
+#            format: date-time
+#          description: Filter activities created before this timestamp
+#        - name: nextCursor
+#          in: query
+#          schema:
+#            type: string
+#          description: Pagination cursor for next page
+#        - name: size
+#          in: query
+#          schema:
+#            type: integer
+#            minimum: 1
+#            maximum: 100
+#            default: 10
+#          description: Number of results per page
+#      responses:
+#        '200':
+#          description: Successful response with activities
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/ActivitiesResponse'
+#      security:
+#        - BearerAuth: [ ]
   /v3/quotes:
     post:
       tags:
@@ -1581,6 +1588,14 @@ paths:
                 $ref: '#/components/schemas/Quote'
         '400':
           description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Quote not found
+        '422':
+          description: Unprocessable Entity
         '500':
           description: Internal Server Error
       security: [ ]
@@ -1598,6 +1613,8 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
+            minimum: 0
       requestBody:
         required: true
         content:
@@ -1622,6 +1639,11 @@ paths:
               parameters:
                 quoteId: '$response.body#/id'
                 profileId: '$request.path.profileId'
+            GetAccountRequirements:
+              operationId: getAccountRequirements
+              parameters:
+                quoteId: '$response.body#/id'
+
         '400':
           description: Bad Request
         '401':
@@ -1630,6 +1652,8 @@ paths:
           description: Forbidden
         '404':
           description: Quote not found
+        '422':
+          description: Unprocessable Entity
         '500':
           description: Internal Server Error
       security:
@@ -1648,6 +1672,8 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
+            minimum: 0
         - name: quoteId
           in: path
           required: true
@@ -1671,8 +1697,12 @@ paths:
           description: Bad Request
         '401':
           description: Unauthorized
+        '403':
+          description: Forbidden
         '404':
           description: Quote not found
+        '422':
+          description: Unprocessable Entity
         '500':
           description: Internal Server Error
       security:
@@ -1690,6 +1720,8 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
+            minimum: 0
         - name: quoteId
           in: path
           required: true
@@ -1707,148 +1739,152 @@ paths:
           description: Bad Request
         '401':
           description: Unauthorized
+        '403':
+          description: Forbidden
         '404':
           description: Quote not found
+        '422':
+          description: Unprocessable Entity
         '500':
           description: Internal Server Error
       security:
         - BearerAuth: [ ]
-  /v1/accounts:
-    post:
-      tags:
-        - Recipients
-      summary: Create a recipient account
-      operationId: createRecipientAccount
-      security:
-        - BearerAuth: [ ]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateRecipientRequest'
-      responses:
-        '200':
-          description: Created recipient account
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Recipient'
-
-  /v1/refund-accounts:
-    post:
-      tags:
-        - Recipients
-      summary: Create a refund recipient account
-      operationId: createRefundRecipientAccount
-      security:
-        - BearerAuth: [ ]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                currency:
-                  type: string
-                country:
-                  type: string
-                type:
-                  type: string
-                profile:
-                  type: integer
-                legalEntityType:
-                  type: string
-                name:
-                  type: object
-                  properties:
-                    fullName:
-                      type: string
-                details:
-                  type: object
-      responses:
-        '200':
-          description: Created refund recipient
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Recipient'
-
-  /v2/accounts:
-    get:
-      tags:
-        - Recipients
-      summary: List recipient accounts
-      operationId: listRecipientAccounts
-      security:
-        - BearerAuth: [ ]
-      parameters:
-        - name: profileId
-          in: query
-          schema:
-            type: integer
-        - name: currency
-          in: query
-          schema:
-            type: string
-        - name: size
-          in: query
-          schema:
-            type: integer
-        - name: seekPosition
-          in: query
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: List of recipient accounts
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedRecipients'
-
-  /v2/accounts/{accountId}:
-    get:
-      tags:
-        - Recipients
-      summary: Get recipient account by ID
-      operationId: getRecipientAccountById
-      security:
-        - BearerAuth: [ ]
-      parameters:
-        - name: accountId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Recipient account details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Recipient'
-    delete:
-      tags:
-        - Recipients
-      summary: Deactivate a recipient account
-      operationId: deactivateRecipientAccount
-      security:
-        - BearerAuth: [ ]
-      parameters:
-        - name: accountId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Deactivated recipient
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Recipient'
+#  /v1/accounts:
+#    post:
+#      tags:
+#        - Recipients
+#      summary: Create a recipient account
+#      operationId: createRecipientAccount
+#      security:
+#        - BearerAuth: [ ]
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: '#/components/schemas/CreateRecipientRequest'
+#      responses:
+#        '200':
+#          description: Created recipient account
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/Recipient'
+#
+#  /v1/refund-accounts:
+#    post:
+#      tags:
+#        - Recipients
+#      summary: Create a refund recipient account
+#      operationId: createRefundRecipientAccount
+#      security:
+#        - BearerAuth: [ ]
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              type: object
+#              properties:
+#                currency:
+#                  type: string
+#                country:
+#                  type: string
+#                type:
+#                  type: string
+#                profile:
+#                  type: integer
+#                legalEntityType:
+#                  type: string
+#                name:
+#                  type: object
+#                  properties:
+#                    fullName:
+#                      type: string
+#                details:
+#                  type: object
+#      responses:
+#        '200':
+#          description: Created refund recipient
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/Recipient'
+#
+#  /v2/accounts:
+#    get:
+#      tags:
+#        - Recipients
+#      summary: List recipient accounts
+#      operationId: listRecipientAccounts
+#      security:
+#        - BearerAuth: [ ]
+#      parameters:
+#        - name: profileId
+#          in: query
+#          schema:
+#            type: integer
+#        - name: currency
+#          in: query
+#          schema:
+#            type: string
+#        - name: size
+#          in: query
+#          schema:
+#            type: integer
+#        - name: seekPosition
+#          in: query
+#          schema:
+#            type: integer
+#      responses:
+#        '200':
+#          description: List of recipient accounts
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/PaginatedRecipients'
+#
+#  /v2/accounts/{accountId}:
+#    get:
+#      tags:
+#        - Recipients
+#      summary: Get recipient account by ID
+#      operationId: getRecipientAccountById
+#      security:
+#        - BearerAuth: [ ]
+#      parameters:
+#        - name: accountId
+#          in: path
+#          required: true
+#          schema:
+#            type: integer
+#      responses:
+#        '200':
+#          description: Recipient account details
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/Recipient'
+#    delete:
+#      tags:
+#        - Recipients
+#      summary: Deactivate a recipient account
+#      operationId: deactivateRecipientAccount
+#      security:
+#        - BearerAuth: [ ]
+#      parameters:
+#        - name: accountId
+#          in: path
+#          required: true
+#          schema:
+#            type: integer
+#      responses:
+#        '200':
+#          description: Deactivated recipient
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/Recipient'
 
   /v1/quotes/{quoteId}/account-requirements:
     get:
@@ -1864,6 +1900,7 @@ paths:
           required: true
           schema:
             type: string
+            format: uuid
         - name: originatorLegalEntityType
           in: query
           schema:
@@ -1879,15 +1916,29 @@ paths:
         - name: Accept-Minor-Version
           in: header
           schema:
-            type: string
-            default: "1"
+            type: integer
+            format: int32
+            minimum: 1
+            default: 1
       responses:
-        "200":
+        '200':
           description: Account requirements
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AccountRequirements"
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Quote not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
     post:
       tags:
         - Recipients
@@ -1902,6 +1953,7 @@ paths:
           required: true
           schema:
             type: string
+            format: uuid
           description: "The ID of the quote."
         - name: originatorLegalEntityType
           in: query
@@ -1917,8 +1969,10 @@ paths:
         - name: Accept-Minor-Version
           in: header
           schema:
-            type: string
-            default: "1"
+            type: integer
+            format: int32
+            minimum: 1
+            default: 1
           description: "Set to '1' to use version 1.1 which includes dynamic fields for name and email."
       requestBody:
         description: "A partial or complete recipient object based on the requirements you have already received."
@@ -1934,279 +1988,287 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountRequirements'
-  /v1/transfers:
-    post:
-      tags:
-        - Transfers
-      summary: Create a standard transfer
-      operationId: createTransfer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateStandardTransferRequest'
-      responses:
-        '201':
-          description: Transfer created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StandardTransfer'
-      security:
-        - BearerAuth: [ ]
-
-    get:
-      tags:
-        - Transfers
-      summary: List transfers
-      operationId: listTransfers
-      parameters:
-        - $ref: '#/components/parameters/profile'
-        - $ref: '#/components/parameters/status'
-        - $ref: '#/components/parameters/sourceCurrency'
-        - $ref: '#/components/parameters/targetCurrency'
-        - $ref: '#/components/parameters/createdDateStart'
-        - $ref: '#/components/parameters/createdDateEnd'
-        - $ref: '#/components/parameters/limit'
-        - $ref: '#/components/parameters/offset'
-      responses:
-        '200':
-          description: List of transfers
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  oneOf:
-                    - $ref: '#/components/schemas/StandardTransfer'
-                    - $ref: '#/components/schemas/OriginatorTransfer'
-      security:
-        - BearerAuth: [ ]
-
-  /v1/transfers/{transferId}:
-    get:
-      tags:
-        - Transfers
-      summary: Get transfer by ID
-      operationId: getTransferById
-      parameters:
-        - $ref: '#/components/parameters/transferId'
-      responses:
-        '200':
-          description: Transfer details
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/StandardTransfer'
-                  - $ref: '#/components/schemas/OriginatorTransfer'
-      security:
-        - BearerAuth: [ ]
-
-    put:
-      tags:
-        - Transfers
-      summary: Cancel transfer
-      operationId: cancelTransfer
-      parameters:
-        - $ref: '#/components/parameters/transferId'
-      responses:
-        '200':
-          description: Transfer cancelled
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/StandardTransfer'
-                  - $ref: '#/components/schemas/OriginatorTransfer'
-      security:
-        - BearerAuth: [ ]
-
-  /v1/transfers/{transferId}/receipt.pdf:
-    get:
-      tags:
-        - Transfers
-      summary: Get transfer receipt PDF
-      operationId: getTransferReceipt
-      parameters:
-        - $ref: '#/components/parameters/transferId'
-      responses:
-        '200':
-          description: PDF receipt
-          content:
-            application/pdf:
-              schema:
-                type: string
-                format: binary
-      security:
-        - BearerAuth: [ ]
-
-  /v1/transfers/{transferId}/documents/noc:
-    get:
-      tags:
-        - Transfers
-      summary: Get NOC document
-      operationId: getNocDocument
-      parameters:
-        - $ref: '#/components/parameters/transferId'
-      responses:
-        '200':
-          description: NOC PDF document
-          content:
-            application/pdf:
-              schema:
-                type: string
-                format: binary
-      security:
-        - BearerAuth: [ ]
-
-  /v2/transfers/{transferId}/invoices/bankingpartner:
-    get:
-      tags:
-        - Transfers
-      summary: Get banking partner invoice (v2)
-      operationId: getBankingPartnerInvoice
-      parameters:
-        - $ref: '#/components/parameters/transferId'
-      responses:
-        '200':
-          description: Banking partner invoice details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BankingPartnerInvoice'
-      security:
-        - BearerAuth: [ ]
-
-  /v1/transfers/{transferId}/payments:
-    get:
-      tags:
-        - Transfers
-      summary: List transfer payments
-      operationId: listTransferPayments
-      parameters:
-        - $ref: '#/components/parameters/transferId'
-      responses:
-        '200':
-          description: List of payments
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaymentsList'
-      security:
-        - BearerAuth: [ ]
-
-  /v2/profiles/{profileId}/third-party-transfers:
-    post:
-      tags:
-        - Transfers
-      summary: Create third-party transfer
-      operationId: createThirdPartyTransfer
-      parameters:
-        - $ref: '#/components/parameters/profileId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateThirdPartyTransferRequest'
-      responses:
-        '201':
-          description: Transfer created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OriginatorTransfer'
-      security:
-        - BearerAuth: [ ]
-
-  /v2/profiles/{profileId}/third-party-transfers/{transferId}:
-    get:
-      tags:
-        - Transfers
-      summary: Get third-party transfer
-      operationId: getThirdPartyTransfer
-      parameters:
-        - $ref: '#/components/parameters/profileId'
-        - $ref: '#/components/parameters/transferId'
-      responses:
-        '200':
-          description: Transfer details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OriginatorTransfer'
-      security:
-        - BearerAuth: [ ]
-
-  /v1/profiles/{profileId}/partner-licence-transfers:
-    post:
-      tags:
-        - Transfers
-      summary: Create partner license
-      operationId: createPartnerLicenceTransfer
-      parameters:
-        - $ref: '#/components/parameters/profileId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreatePartnerLicenceTransferRequest'
-      responses:
-        '201':
-          description: Transfer created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OriginatorTransfer'
-      security:
-        - BearerAuth: [ ]
-
-  /v1/transfer-requirements:
-    post:
-      tags:
-        - Transfers
-      summary: Get transfer requirements
-      operationId: calculateTransferRequirements
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TransferRequirementsRequest'
-      responses:
-        '200':
-          description: Transfer requirements
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TransferRequirementsResponse'
-      security:
-        - BearerAuth: [ ]
-
-  /v3/profiles/{profileId}/transfers/{transferId}/payments:
-    post:
-      tags:
-        - Transfers
-      summary: Fund a transfer
-      operationId: fundTransfer
-      parameters:
-        - $ref: '#/components/parameters/profileId'
-        - $ref: '#/components/parameters/transferId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PaymentRequest'
-      responses:
-        '200':
-          description: Payment processed
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaymentResponse'
-      security:
-        - BearerAuth: [ ]
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Quote not found
+        '500':
+          description: Internal Server Error
+#  /v1/transfers:
+#    post:
+#      tags:
+#        - Transfers
+#      summary: Create a standard transfer
+#      operationId: createTransfer
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: '#/components/schemas/CreateStandardTransferRequest'
+#      responses:
+#        '201':
+#          description: Transfer created
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/StandardTransfer'
+#      security:
+#        - BearerAuth: [ ]
+#
+#    get:
+#      tags:
+#        - Transfers
+#      summary: List transfers
+#      operationId: listTransfers
+#      parameters:
+#        - $ref: '#/components/parameters/profile'
+#        - $ref: '#/components/parameters/status'
+#        - $ref: '#/components/parameters/sourceCurrency'
+#        - $ref: '#/components/parameters/targetCurrency'
+#        - $ref: '#/components/parameters/createdDateStart'
+#        - $ref: '#/components/parameters/createdDateEnd'
+#        - $ref: '#/components/parameters/limit'
+#        - $ref: '#/components/parameters/offset'
+#      responses:
+#        '200':
+#          description: List of transfers
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  oneOf:
+#                    - $ref: '#/components/schemas/StandardTransfer'
+#                    - $ref: '#/components/schemas/OriginatorTransfer'
+#      security:
+#        - BearerAuth: [ ]
+#
+#  /v1/transfers/{transferId}:
+#    get:
+#      tags:
+#        - Transfers
+#      summary: Get transfer by ID
+#      operationId: getTransferById
+#      parameters:
+#        - $ref: '#/components/parameters/transferId'
+#      responses:
+#        '200':
+#          description: Transfer details
+#          content:
+#            application/json:
+#              schema:
+#                oneOf:
+#                  - $ref: '#/components/schemas/StandardTransfer'
+#                  - $ref: '#/components/schemas/OriginatorTransfer'
+#      security:
+#        - BearerAuth: [ ]
+#
+#    put:
+#      tags:
+#        - Transfers
+#      summary: Cancel transfer
+#      operationId: cancelTransfer
+#      parameters:
+#        - $ref: '#/components/parameters/transferId'
+#      responses:
+#        '200':
+#          description: Transfer cancelled
+#          content:
+#            application/json:
+#              schema:
+#                oneOf:
+#                  - $ref: '#/components/schemas/StandardTransfer'
+#                  - $ref: '#/components/schemas/OriginatorTransfer'
+#      security:
+#        - BearerAuth: [ ]
+#
+#  /v1/transfers/{transferId}/receipt.pdf:
+#    get:
+#      tags:
+#        - Transfers
+#      summary: Get transfer receipt PDF
+#      operationId: getTransferReceipt
+#      parameters:
+#        - $ref: '#/components/parameters/transferId'
+#      responses:
+#        '200':
+#          description: PDF receipt
+#          content:
+#            application/pdf:
+#              schema:
+#                type: string
+#                format: binary
+#      security:
+#        - BearerAuth: [ ]
+#
+#  /v1/transfers/{transferId}/documents/noc:
+#    get:
+#      tags:
+#        - Transfers
+#      summary: Get NOC document
+#      operationId: getNocDocument
+#      parameters:
+#        - $ref: '#/components/parameters/transferId'
+#      responses:
+#        '200':
+#          description: NOC PDF document
+#          content:
+#            application/pdf:
+#              schema:
+#                type: string
+#                format: binary
+#      security:
+#        - BearerAuth: [ ]
+#
+#  /v2/transfers/{transferId}/invoices/bankingpartner:
+#    get:
+#      tags:
+#        - Transfers
+#      summary: Get banking partner invoice (v2)
+#      operationId: getBankingPartnerInvoice
+#      parameters:
+#        - $ref: '#/components/parameters/transferId'
+#      responses:
+#        '200':
+#          description: Banking partner invoice details
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/BankingPartnerInvoice'
+#      security:
+#        - BearerAuth: [ ]
+#
+#  /v1/transfers/{transferId}/payments:
+#    get:
+#      tags:
+#        - Transfers
+#      summary: List transfer payments
+#      operationId: listTransferPayments
+#      parameters:
+#        - $ref: '#/components/parameters/transferId'
+#      responses:
+#        '200':
+#          description: List of payments
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/PaymentsList'
+#      security:
+#        - BearerAuth: [ ]
+#
+#  /v2/profiles/{profileId}/third-party-transfers:
+#    post:
+#      tags:
+#        - Transfers
+#      summary: Create third-party transfer
+#      operationId: createThirdPartyTransfer
+#      parameters:
+#        - $ref: '#/components/parameters/profileId'
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: '#/components/schemas/CreateThirdPartyTransferRequest'
+#      responses:
+#        '201':
+#          description: Transfer created
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/OriginatorTransfer'
+#      security:
+#        - BearerAuth: [ ]
+#
+#  /v2/profiles/{profileId}/third-party-transfers/{transferId}:
+#    get:
+#      tags:
+#        - Transfers
+#      summary: Get third-party transfer
+#      operationId: getThirdPartyTransfer
+#      parameters:
+#        - $ref: '#/components/parameters/profileId'
+#        - $ref: '#/components/parameters/transferId'
+#      responses:
+#        '200':
+#          description: Transfer details
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/OriginatorTransfer'
+#      security:
+#        - BearerAuth: [ ]
+#
+#  /v1/profiles/{profileId}/partner-licence-transfers:
+#    post:
+#      tags:
+#        - Transfers
+#      summary: Create partner license
+#      operationId: createPartnerLicenceTransfer
+#      parameters:
+#        - $ref: '#/components/parameters/profileId'
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: '#/components/schemas/CreatePartnerLicenceTransferRequest'
+#      responses:
+#        '201':
+#          description: Transfer created
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/OriginatorTransfer'
+#      security:
+#        - BearerAuth: [ ]
+#
+#  /v1/transfer-requirements:
+#    post:
+#      tags:
+#        - Transfers
+#      summary: Get transfer requirements
+#      operationId: calculateTransferRequirements
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: '#/components/schemas/TransferRequirementsRequest'
+#      responses:
+#        '200':
+#          description: Transfer requirements
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/TransferRequirementsResponse'
+#      security:
+#        - BearerAuth: [ ]
+#
+#  /v3/profiles/{profileId}/transfers/{transferId}/payments:
+#    post:
+#      tags:
+#        - Transfers
+#      summary: Fund a transfer
+#      operationId: fundTransfer
+#      parameters:
+#        - $ref: '#/components/parameters/profileId'
+#        - $ref: '#/components/parameters/transferId'
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: '#/components/schemas/PaymentRequest'
+#      responses:
+#        '200':
+#          description: Payment processed
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/PaymentResponse'
+#      security:
+#        - BearerAuth: [ ]
