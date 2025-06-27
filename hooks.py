@@ -1,9 +1,12 @@
 import schemathesis
+import os
 from hypothesis import strategies as st
 import numbers  # Import the numbers module
 
 VALID_CURRENCIES = ["USD", "GBP", "EUR", "JPY", "CAD", "AUD"]
-PROFILE_ID = 25
+TARGET_CURRENCY = 'GBP'
+SOURCE_CURRENCY = 'EUR'
+PROFILE_ID = 25 # TODO move to env variable
 TAG_QUOTES = "Quotes"
 TAG_RECIPIENTS = "Recipients"
 
@@ -31,30 +34,36 @@ def before_init_operation(context, operation):
                     properties = sub_schema.get("properties", {})
                     if "sourceAmount" in properties:
                         properties["sourceAmount"]["minimum"] = 10
-                        properties["sourceAmount"]["maximum"] = 1000_000
+                        properties["sourceAmount"]["maximum"] = 1_000_000
                         del properties["sourceAmount"]['exclusiveMinimum']
                     if "targetAmount" in properties:
                         properties["targetAmount"]["minimum"] = 10
-                        properties["targetAmount"]["maximum"] = 1000_000
+                        properties["targetAmount"]["maximum"] = 1_000_000
                         del properties["targetAmount"]['exclusiveMinimum']
 
             if schema and "properties" in schema:
                 properties = schema["properties"]
                 if "sourceCurrency" in properties:
-                    properties["sourceCurrency"]["enum"] = VALID_CURRENCIES
+                    properties["sourceCurrency"]["enum"] = [SOURCE_CURRENCY]
                 if "targetCurrency" in properties:
-                    properties["targetCurrency"]["enum"] = VALID_CURRENCIES
-
+                    properties["targetCurrency"]["enum"] = [TARGET_CURRENCY]
         # This logic applies to path parameters.
         for parameter in operation.path_parameters:
             if parameter.name == "profileId":
-                parameter.definition["schema"]["const"] = PROFILE_ID
+                parameter.definition["schema"]["enum"] = [str(PROFILE_ID)]
+                parameter.definition["schema"]["type"] = 'string'
                 del parameter.definition["schema"]['minimum']
                 del parameter.definition["schema"]['format']
 
     # --- Logic for "Recipients" tag ---
 
     elif primary_tag == TAG_RECIPIENTS:
+        # Set currency parameter to TARGET_CURRENCY for list recipients endpoint
+        if operation.method == "GET" and "/v2/accounts" in operation.path:
+            for parameter in operation.query:
+                if parameter.name == "currency":
+                    parameter.definition["schema"]["enum"] = [TARGET_CURRENCY]
+
         # This logic applies to POST/PUT/PATCH requests which have a body.
         for alternative in operation.body:
             schema = alternative.definition.get("schema", {})
@@ -65,6 +74,12 @@ def before_init_operation(context, operation):
                 del properties["profile"]['minimum']
                 del properties["profile"]['format']
             if 'currency' in properties:
-                properties["currency"]["enum"] = VALID_CURRENCIES
+                properties["currency"]["enum"] = [TARGET_CURRENCY]
             if 'type' in properties:
-                properties["type"]["enum"] = ["IBAN"]
+                properties["type"]["enum"] = ["email"]
+            if 'accountHolderName' in properties:
+                properties["accountHolderName"]["const"] = 'Openapi TestUser'
+                del properties["accountHolderName"]['example']
+
+            properties["email"]["const"] = 'Openapi@TestUser.ee'
+            properties["email"]["type"] = 'string'
