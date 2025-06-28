@@ -1127,6 +1127,8 @@ components:
       required: true
       schema:
         type: string
+        format: int64
+        minimum: 0
     transferId:
       name: transferId
       in: path
@@ -1138,6 +1140,8 @@ components:
       in: query
       schema:
         type: integer
+        format: int64
+        minimum: 0
     status:
       name: status
       in: query
@@ -1149,12 +1153,16 @@ components:
       schema:
         type: string
         pattern: '^[A-Z]{3}$'
+        minLength: 3
+        maxLength: 3
     targetCurrency:
       name: targetCurrency
       in: query
       schema:
         type: string
         pattern: '^[A-Z]{3}$'
+        minLength: 3
+        maxLength: 3
     createdDateStart:
       name: createdDateStart
       in: query
@@ -2044,55 +2052,55 @@ paths:
           description: Quote not found
         '500':
           description: Internal Server Error
-#  /v1/transfers:
-#    post:
-#      tags:
-#        - Transfers
-#      summary: Create a standard transfer
-#      operationId: createTransfer
-#      requestBody:
-#        required: true
-#        content:
-#          application/json:
-#            schema:
-#              $ref: '#/components/schemas/CreateStandardTransferRequest'
-#      responses:
-#        '201':
-#          description: Transfer created
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/StandardTransfer'
-#      security:
-#        - BearerAuth: [ ]
-#
-#    get:
-#      tags:
-#        - Transfers
-#      summary: List transfers
-#      operationId: listTransfers
-#      parameters:
-#        - $ref: '#/components/parameters/profile'
-#        - $ref: '#/components/parameters/status'
-#        - $ref: '#/components/parameters/sourceCurrency'
-#        - $ref: '#/components/parameters/targetCurrency'
-#        - $ref: '#/components/parameters/createdDateStart'
-#        - $ref: '#/components/parameters/createdDateEnd'
-#        - $ref: '#/components/parameters/limit'
-#        - $ref: '#/components/parameters/offset'
-#      responses:
-#        '200':
-#          description: List of transfers
-#          content:
-#            application/json:
-#              schema:
-#                type: array
-#                items:
-#                  oneOf:
-#                    - $ref: '#/components/schemas/StandardTransfer'
-#                    - $ref: '#/components/schemas/OriginatorTransfer'
-#      security:
-#        - BearerAuth: [ ]
+  /v1/transfers:
+    post:
+      tags:
+        - Transfers
+      summary: Create a standard transfer
+      operationId: createTransfer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStandardTransferRequest'
+      responses:
+        '201':
+          description: Transfer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardTransfer'
+      security:
+        - BearerAuth: [ ]
+
+    get:
+      tags:
+        - Transfers
+      summary: List transfers
+      operationId: listTransfers
+      parameters:
+        - $ref: '#/components/parameters/profile'
+        - $ref: '#/components/parameters/status'
+        - $ref: '#/components/parameters/sourceCurrency'
+        - $ref: '#/components/parameters/targetCurrency'
+        - $ref: '#/components/parameters/createdDateStart'
+        - $ref: '#/components/parameters/createdDateEnd'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+      responses:
+        '200':
+          description: List of transfers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: '#/components/schemas/StandardTransfer'
+                    - $ref: '#/components/schemas/OriginatorTransfer'
+      security:
+        - BearerAuth: [ ]
 #
 #  /v1/transfers/{transferId}:
 #    get:
