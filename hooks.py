@@ -6,7 +6,7 @@ import numbers  # Import the numbers module
 VALID_CURRENCIES = ["USD", "GBP", "EUR", "JPY", "CAD", "AUD"]
 TARGET_CURRENCY = 'GBP'
 SOURCE_CURRENCY = 'EUR'
-PROFILE_ID = 25 # TODO move to env variable
+PROFILE_ID = 25  # TODO move to env variable
 TAG_QUOTES = "Quotes"
 TAG_RECIPIENTS = "Recipients"
 
@@ -45,8 +45,17 @@ def before_init_operation(context, operation):
                 properties = schema["properties"]
                 if "sourceCurrency" in properties:
                     properties["sourceCurrency"]["enum"] = [SOURCE_CURRENCY]
+                    del properties["sourceCurrency"]['example']
+                    del properties["sourceCurrency"]['pattern']
+                    del properties["sourceCurrency"]['minLength']
+                    del properties["sourceCurrency"]['maxLength']
                 if "targetCurrency" in properties:
                     properties["targetCurrency"]["enum"] = [TARGET_CURRENCY]
+                    del properties["targetCurrency"]['example']
+                    del properties["targetCurrency"]['pattern']
+                    del properties["targetCurrency"]['minLength']
+                    del properties["targetCurrency"]['maxLength']
+
         # This logic applies to path parameters.
         for parameter in operation.path_parameters:
             if parameter.name == "profileId":
@@ -59,7 +68,7 @@ def before_init_operation(context, operation):
 
     elif primary_tag == TAG_RECIPIENTS:
         # Set currency parameter to TARGET_CURRENCY for list recipients endpoint
-        if operation.method == "GET" and "/v2/accounts" in operation.path:
+        if operation.method.lower().strip() == "get" and "/v2/accounts" == operation.path.lower().strip():
             for parameter in operation.query:
                 if parameter.name == "currency":
                     parameter.definition["schema"]["enum"] = [TARGET_CURRENCY]
@@ -68,6 +77,7 @@ def before_init_operation(context, operation):
         for alternative in operation.body:
             schema = alternative.definition.get("schema", {})
             properties = schema.get("properties", {})
+
             if "profile" in properties:
                 properties["profile"]["const"] = PROFILE_ID
                 del properties["profile"]['example']
@@ -75,11 +85,31 @@ def before_init_operation(context, operation):
                 del properties["profile"]['format']
             if 'currency' in properties:
                 properties["currency"]["enum"] = [TARGET_CURRENCY]
+                del properties["currency"]['example']
+                del properties["currency"]['pattern']
+                del properties["currency"]['minLength']
+                del properties["currency"]['maxLength']
+
             if 'type' in properties:
                 properties["type"]["enum"] = ["email"]
+                del properties["type"]['example']
             if 'accountHolderName' in properties:
                 properties["accountHolderName"]["const"] = 'Openapi TestUser'
                 del properties["accountHolderName"]['example']
+            if 'ownedByCustomer' in properties:
+                del properties["ownedByCustomer"]
 
-            properties["email"]["const"] = 'Openapi@TestUser.ee'
-            properties["email"]["type"] = 'string'
+            if operation.method.lower().strip() == "post" and "/v1/accounts" == operation.path.lower().strip():
+                properties["details"] = {"type": "object", "properties": {}, "required": ['email']}
+                properties["details"]["properties"]["email"] = {
+                    "type": "string",
+                    "const": "Openapi@TestUser.ee"
+                }
+                # Make details required and email required within details
+                required = schema.get("required", [])
+                if "details" not in required:
+                    required.append("details")
+                if 'example' in schema:
+                    del schema['example']
+                if 'additionalProperties' in schema:
+                    schema['additionalProperties'] = False
