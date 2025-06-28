@@ -100,7 +100,7 @@ def before_init_operation(context, operation):
                 del properties["ownedByCustomer"]
 
             if operation.method.lower().strip() == "post" and "/v1/accounts" == operation.path.lower().strip():
-                properties["details"] = {"type": "object", "properties": {}, "required": ['email']}
+                properties["details"] = {"type": "object", "properties": {}, "required": ['email'], 'additionalProperties': False}
                 properties["details"]["properties"]["email"] = {
                     "type": "string",
                     "const": "Openapi@TestUser.ee"

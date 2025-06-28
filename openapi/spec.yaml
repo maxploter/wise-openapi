@@ -1654,6 +1654,10 @@ paths:
               operationId: getAccountRequirements
               parameters:
                 quoteId: '$response.body#/id'
+            GetRefinedAccountRequirements:
+              operationId: getRefinedAccountRequirements
+              parameters:
+                quoteId: '$response.body#/id'
 
         '400':
           description: Bad Request
