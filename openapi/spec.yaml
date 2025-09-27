@@ -30,6 +30,19 @@ tags:
     description: Operations for creating and managing money transfers
 components:
   schemas:
+    Id:
+      type: integer
+      format: int64
+      minimum: 1
+      description: A unique identifier
+      example: 25
+
+    ProfileId:
+      allOf:
+        - $ref: '#/components/schemas/Id'
+        - description: A unique profile identifier
+          example: 25
+
     PersonalProfile:
       type: object
       properties:
@@ -2328,3 +2341,4 @@ paths:
 #                $ref: '#/components/schemas/PaymentResponse'
 #      security:
 #        - BearerAuth: [ ]
+
