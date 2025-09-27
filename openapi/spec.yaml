@@ -482,6 +482,16 @@ components:
           type: string
           enum: [ WARNING, INFO, BLOCKED ]
 
+    PaymentMetadata:
+      type: object
+      properties:
+        transferNature:
+          type: string
+          description: "Optional. Used to pass transfer nature for calculating proper tax amounts (IOF) for transfers to and from BRL."
+          example: "MOVING_MONEY_BETWEEN_OWN_ACCOUNTS"
+      nullable: true
+      description: "Metadata object used to pass additional information about the intended transfer, particularly for BRL transfers where transfer nature affects tax calculations."
+
     CreateUnauthenticatedQuoteRequestBase:
       type: object
       required:
@@ -550,13 +560,7 @@ components:
           enum: [BANK_TRANSFER, BALANCE]
           example: BANK_TRANSFER
         paymentMetadata:
-          type: object
-          properties:
-            transferNature:
-              type: string
-              description: "Optional. Used to pass transfer nature for calculating proper tax amounts (IOF) for transfers to and from BRL."
-              example: "MOVING_MONEY_BETWEEN_OWN_ACCOUNTS"
-          nullable: true
+          $ref: '#/components/schemas/PaymentMetadata'
         pricingConfiguration:
           $ref: '#/components/schemas/PricingConfiguration'
 
@@ -596,10 +600,7 @@ components:
         payOut:
           type: string
         paymentMetadata:
-          type: object
-          properties:
-            transferNature:
-              type: string
+          $ref: '#/components/schemas/PaymentMetadata'
         pricingConfiguration:
           $ref: '#/components/schemas/PricingConfiguration'
     Recipient:
