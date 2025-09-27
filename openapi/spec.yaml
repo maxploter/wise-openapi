@@ -43,6 +43,20 @@ components:
         - description: A unique profile identifier
           example: 25
 
+    TransferId:
+      allOf:
+        - $ref: '#/components/schemas/Id'
+        - description: A unique transfer identifier
+          example: 16521632
+
+    Currency:
+      type: string
+      pattern: '^[A-Z]{3}$'
+      minLength: 3
+      maxLength: 3
+      description: ISO 4217 three-letter currency code
+      example: GBP
+
     PersonalProfile:
       type: object
       properties:
@@ -328,11 +342,9 @@ components:
           format: uuid
           description: GUID format quote ID
         sourceCurrency:
-          type: string
-          example: GBP
+          $ref: '#/components/schemas/Currency'
         targetCurrency:
-          type: string
-          example: USD
+          $ref: '#/components/schemas/Currency'
         sourceAmount:
           type: number
           format: double
@@ -473,17 +485,9 @@ components:
         - targetCurrency
       properties:
         sourceCurrency:
-          type: string
-          example: GBP
-          pattern: '^[A-Z]{3}$'
-          minLength: 3
-          maxLength: 3
+          $ref: '#/components/schemas/Currency'
         targetCurrency:
-          type: string
-          example: EUR
-          pattern: '^[A-Z]{3}$'
-          minLength: 3
-          maxLength: 3
+          $ref: '#/components/schemas/Currency'
         pricingConfiguration:
           $ref: '#/components/schemas/PricingConfiguration'
       oneOf:
@@ -509,17 +513,9 @@ components:
         - targetCurrency
       properties:
         sourceCurrency:
-          type: string
-          example: GBP
-          pattern: '^[A-Z]{3}$'
-          minLength: 3
-          maxLength: 3
+          $ref: '#/components/schemas/Currency'
         targetCurrency:
-          type: string
-          example: EUR
-          pattern: '^[A-Z]{3}$'
-          minLength: 3
-          maxLength: 3
+          $ref: '#/components/schemas/Currency'
         targetAccount:
           type: integer
           format: int64
@@ -595,8 +591,7 @@ components:
               type: string
               nullable: true
         currency:
-          type: string
-          example: GBP
+          $ref: '#/components/schemas/Currency'
         country:
           type: string
           example: GB
@@ -753,9 +748,7 @@ components:
           type: object
           properties:
             id:
-              type: integer
-              format: int64
-              example: 16521632
+              $ref: '#/components/schemas/TransferId'
             user:
               type: integer
               example: 4342275
@@ -797,14 +790,12 @@ components:
             hasActiveIssues:
               type: boolean
             sourceCurrency:
-              type: string
-              pattern: '^[A-Z]{3}$'
+              $ref: '#/components/schemas/Currency'
             sourceValue:
               type: number
               format: float
             targetCurrency:
-              type: string
-              pattern: '^[A-Z]{3}$'
+              $ref: '#/components/schemas/Currency'
             targetValue:
               type: number
               format: float
@@ -1139,7 +1130,7 @@ components:
       in: path
       required: true
       schema:
-        type: integer
+        $ref: '#/components/schemas/TransferId'
     profile:
       name: profile
       in: query
