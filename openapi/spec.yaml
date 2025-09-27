@@ -1,7 +1,7 @@
 openapi: 3.1.1
 info:
   title: Wise Platform API
-  version: 0.4.0
+  version: 0.4.1
   description: |
     Comprehensive API for Wise platform services including:
     - Profile
@@ -1740,12 +1740,10 @@ paths:
                 accountId: '$response.body#/id'
             UpdateQuote:
               operationId: updateQuote
-              requestBody:
-                targetAccount: '$response.body#/id'
+              requestBody: '{"targetAccount": $response.body#/id}'
             CreateAuthenticatedQuote:
               operationId: createAuthenticatedQuote
-              requestBody:
-                targetAccount: '$response.body#/id'
+              requestBody: '{"targetAccount": $response.body#/id}'
 
         '400':
           description: Bad Request
