@@ -537,11 +537,25 @@ components:
           minimum: 0
           nullable: true
           description: "The ID of the recipient's account. This ID must exist in the system."
+        payOut:
+          type: string
+          nullable: true
+          description: "Optional. Preferred payout method. Default value is BANK_TRANSFER."
+          enum: [BANK_TRANSFER, BALANCE, SWIFT, SWIFT_OUR, INTERAC]
+          example: BANK_TRANSFER
+        preferredPayIn:
+          type: string
+          nullable: true
+          description: "Optional. Preferred payin method. Use BANK_TRANSFER to return this method at the top of the response's results."
+          enum: [BANK_TRANSFER, BALANCE]
+          example: BANK_TRANSFER
         paymentMetadata:
           type: object
           properties:
             transferNature:
               type: string
+              description: "Optional. Used to pass transfer nature for calculating proper tax amounts (IOF) for transfers to and from BRL."
+              example: "MOVING_MONEY_BETWEEN_OWN_ACCOUNTS"
           nullable: true
         pricingConfiguration:
           $ref: '#/components/schemas/PricingConfiguration'
