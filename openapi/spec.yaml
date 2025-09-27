@@ -1,7 +1,7 @@
 openapi: 3.1.1
 info:
   title: Wise Platform API
-  version: 0.3.0
+  version: 0.4.0
   description: |
     Comprehensive API for Wise platform services including:
     - Profile
@@ -54,6 +54,12 @@ components:
         - $ref: '#/components/schemas/Id'
         - description: A unique user identifier
           example: 12345
+
+    QuoteId:
+      type: string
+      format: uuid
+      description: A unique quote identifier in GUID format
+      example: "8fa9be20-ba43-4b15-abbb-9424e1481050"
 
     Currency:
       type: string
@@ -342,9 +348,7 @@ components:
       type: object
       properties:
         id:
-          type: string
-          format: uuid
-          description: GUID format quote ID
+          $ref: '#/components/schemas/QuoteId'
         sourceCurrency:
           $ref: '#/components/schemas/Currency'
         targetCurrency:
@@ -655,12 +659,7 @@ components:
         - accountHolderName
       properties:
         currency:
-          type: string
-          description: "3 character currency code for the recipient's account."
-          example: 'GBP'
-          pattern: '^[A-Z]{3}$'
-          minLength: 3
-          maxLength: 3
+          $ref: '#/components/schemas/Currency'
         type:
           type: string
           description: "The type of recipient account, determined from the account requirements."
@@ -1186,6 +1185,12 @@ components:
         type: integer
         default: 0
         minimum: 0
+    quoteId:
+      name: quoteId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/QuoteId'
 
   securitySchemes:
     BearerAuth:
@@ -1644,12 +1649,7 @@ paths:
       operationId: updateQuote
       parameters:
         - $ref: '#/components/parameters/profileId'
-        - name: quoteId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/quoteId'
       requestBody:
         required: true
         content:
@@ -1685,19 +1685,8 @@ paths:
       description: Retrieves a quote by its ID. Expired quotes are available for ~48 hours.
       operationId: getQuoteById
       parameters:
-        - name: profileId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            minimum: 0
-        - name: quoteId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/profileId'
+        - $ref: '#/components/parameters/quoteId'
       responses:
         '200':
           description: Successfully retrieved quote
@@ -1898,12 +1887,7 @@ paths:
       security:
         - BearerAuth: [ ]
       parameters:
-        - name: quoteId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/quoteId'
         - name: originatorLegalEntityType
           in: query
           schema:
