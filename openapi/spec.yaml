@@ -49,6 +49,12 @@ components:
         - description: A unique transfer identifier
           example: 16521632
 
+    UserId:
+      allOf:
+        - $ref: '#/components/schemas/Id'
+        - description: A unique user identifier
+          example: 12345
+
     Currency:
       type: string
       pattern: '^[A-Z]{3}$'
@@ -570,9 +576,7 @@ components:
           format: int64
           minimum: 0
         creatorId:
-          type: integer
-          format: int64
-          minimum: 0
+          $ref: '#/components/schemas/UserId'
         profileId:
           $ref: '#/components/schemas/ProfileId'
         name:
