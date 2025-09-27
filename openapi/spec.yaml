@@ -1,7 +1,7 @@
 openapi: 3.1.1
 info:
   title: Wise Platform API
-  version: 0.4.2
+  version: 0.4.3
   description: |
     Comprehensive API for Wise platform services including:
     - Profile
@@ -482,7 +482,7 @@ components:
           type: string
           enum: [ WARNING, INFO, BLOCKED ]
 
-    CreateUnauthenticatedQuoteRequest:
+    CreateUnauthenticatedQuoteRequestBase:
       type: object
       required:
         - sourceCurrency
@@ -494,15 +494,26 @@ components:
           $ref: '#/components/schemas/Currency'
         pricingConfiguration:
           $ref: '#/components/schemas/PricingConfiguration'
-      oneOf:
-        - required: [ sourceAmount ]
+
+    CreateUnauthenticatedSourceAmountQuoteRequest:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/CreateUnauthenticatedQuoteRequestBase'
+        - type: object
+          required: [ sourceAmount ]
           properties:
             sourceAmount:
               type: number
               format: double
               description: "The amount in the source currency. Must be greater than 0."
               exclusiveMinimum: 0
-        - required: [ targetAmount ]
+
+    CreateUnauthenticatedTargetAmountQuoteRequest:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/CreateUnauthenticatedQuoteRequestBase'
+        - type: object
+          required: [ targetAmount ]
           properties:
             targetAmount:
               type: number
@@ -510,7 +521,7 @@ components:
               description: "The amount in the target currency. Must be greater than 0."
               exclusiveMinimum: 0
 
-    CreateAuthenticatedQuoteRequest:
+    CreateAuthenticatedQuoteRequestBase:
       type: object
       required:
         - sourceCurrency
@@ -534,15 +545,26 @@ components:
           nullable: true
         pricingConfiguration:
           $ref: '#/components/schemas/PricingConfiguration'
-      oneOf:
-        - required: [ sourceAmount ]
+
+    CreateAuthenticatedSourceAmountQuoteRequest:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/CreateAuthenticatedQuoteRequestBase'
+        - type: object
+          required: [ sourceAmount ]
           properties:
             sourceAmount:
               type: number
               format: double
               description: "The amount in the source currency. Must be greater than 0."
               exclusiveMinimum: 0
-        - required: [ targetAmount ]
+
+    CreateAuthenticatedTargetAmountQuoteRequest:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/CreateAuthenticatedQuoteRequestBase'
+        - type: object
+          required: [ targetAmount ]
           properties:
             targetAmount:
               type: number
@@ -1557,7 +1579,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateUnauthenticatedQuoteRequest'
+              oneOf:
+                - $ref: '#/components/schemas/CreateUnauthenticatedSourceAmountQuoteRequest'
+                - $ref: '#/components/schemas/CreateUnauthenticatedTargetAmountQuoteRequest'
       responses:
         '200':
           description: Successfully created unauthenticated quote
@@ -1593,7 +1617,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateAuthenticatedQuoteRequest'
+              oneOf:
+                - $ref: '#/components/schemas/CreateAuthenticatedSourceAmountQuoteRequest'
+                - $ref: '#/components/schemas/CreateAuthenticatedTargetAmountQuoteRequest'
       responses:
         '200':
           description: Successfully created authenticated quote
