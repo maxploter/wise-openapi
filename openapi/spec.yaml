@@ -1,7 +1,7 @@
 openapi: 3.1.1
 info:
   title: Wise Platform API
-  version: 0.4.1
+  version: 0.4.2
   description: |
     Comprehensive API for Wise platform services including:
     - Profile
@@ -30,30 +30,26 @@ tags:
     description: Operations for creating and managing money transfers
 components:
   schemas:
-    Id:
+    ProfileId:
       type: integer
       format: int64
       minimum: 1
-      description: A unique identifier
+      description: A unique profile identifier
       example: 25
 
-    ProfileId:
-      allOf:
-        - $ref: '#/components/schemas/Id'
-        - description: A unique profile identifier
-          example: 25
-
     TransferId:
-      allOf:
-        - $ref: '#/components/schemas/Id'
-        - description: A unique transfer identifier
-          example: 16521632
+      type: integer
+      format: int64
+      minimum: 1
+      description: A unique transfer identifier
+      example: 16521632
 
     UserId:
-      allOf:
-        - $ref: '#/components/schemas/Id'
-        - description: A unique user identifier
-          example: 12345
+      type: integer
+      format: int64
+      minimum: 1
+      description: A unique user identifier
+      example: 12345
 
     QuoteId:
       type: string
