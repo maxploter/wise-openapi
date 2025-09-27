@@ -353,8 +353,7 @@ components:
           format: date-time
           example: "2019-04-05T13:18:58Z"
         profile:
-          type: integer
-          example: 101
+          $ref: '#/components/schemas/ProfileId'
         rateType:
           type: string
           enum: [ FIXED, FLOATING ]
@@ -579,9 +578,7 @@ components:
           format: int64
           minimum: 0
         profileId:
-          type: integer
-          format: int64
-          minimum: 0
+          $ref: '#/components/schemas/ProfileId'
         name:
           type: object
           properties:
@@ -672,11 +669,8 @@ components:
           description: "The type of recipient account, determined from the account requirements."
           example: 'sort_code'
         profile:
-          type: integer
-          format: int64
-          minimum: 0
+          $ref: '#/components/schemas/ProfileId'
           description: "The profile ID that the recipient will be created under."
-          example: 30000000
         accountHolderName:
           type: string
           description: "The recipient's full name."
@@ -1152,9 +1146,7 @@ components:
       name: profile
       in: query
       schema:
-        type: integer
-        format: int64
-        minimum: 0
+        $ref: '#/components/schemas/ProfileId'
     status:
       name: status
       in: query
@@ -2341,4 +2333,3 @@ paths:
                 $ref: '#/components/schemas/PaymentResponse'
       security:
         - BearerAuth: [ ]
-
