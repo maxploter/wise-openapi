@@ -67,8 +67,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
-          example: 30000001
+          $ref: '#/components/schemas/ProfileId'
         type:
           type: string
           example: "PERSONAL"
@@ -118,8 +117,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
-          example: 30000002
+          $ref: '#/components/schemas/ProfileId'
         type:
           type: string
           example: "BUSINESS"
