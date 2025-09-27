@@ -1,7 +1,7 @@
 openapi: 3.1.1
 info:
   title: Wise Platform API
-  version: 0.4.3
+  version: 0.4.4
   description: |
     Comprehensive API for Wise platform services including:
     - Profile
@@ -56,6 +56,13 @@ components:
       format: uuid
       description: A unique quote identifier in GUID format
       example: "8fa9be20-ba43-4b15-abbb-9424e1481050"
+
+    RecipientId:
+      type: integer
+      format: int64
+      minimum: 1
+      description: A unique recipient account identifier
+      example: 8692237
 
     Currency:
       type: string
@@ -359,6 +366,7 @@ components:
           example: 129.24
         payOut:
           type: string
+          description: "The payout method for this quote. Common values include BANK_TRANSFER, BALANCE, SWIFT, SWIFT_OUR, INTERAC, but other values may be supported."
           example: BANK_TRANSFER
         rate:
           type: number
@@ -542,22 +550,16 @@ components:
         targetCurrency:
           $ref: '#/components/schemas/Currency'
         targetAccount:
-          type: integer
-          format: int64
-          minimum: 0
-          nullable: true
-          description: "The ID of the recipient's account. This ID must exist in the system."
+          $ref: '#/components/schemas/RecipientId'
         payOut:
           type: string
           nullable: true
-          description: "Optional. Preferred payout method. Default value is BANK_TRANSFER."
-          enum: [BANK_TRANSFER, BALANCE, SWIFT, SWIFT_OUR, INTERAC]
+          description: "Optional. Preferred payout method. Default value is BANK_TRANSFER. Common values include BANK_TRANSFER, BALANCE, SWIFT, SWIFT_OUR, INTERAC, but other values may be supported."
           example: BANK_TRANSFER
         preferredPayIn:
           type: string
           nullable: true
-          description: "Optional. Preferred payin method. Use BANK_TRANSFER to return this method at the top of the response's results."
-          enum: [BANK_TRANSFER, BALANCE]
+          description: "Optional. Preferred payin method. Use BANK_TRANSFER to return this method at the top of the response's results. Common values include BANK_TRANSFER, BALANCE, SWIFT, SWIFT_OUR, INTERAC, but other values may be supported."
           example: BANK_TRANSFER
         paymentMetadata:
           $ref: '#/components/schemas/PaymentMetadata'
@@ -607,9 +609,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
-          format: int64
-          minimum: 0
+          $ref: '#/components/schemas/RecipientId'
         creatorId:
           $ref: '#/components/schemas/UserId'
         profileId:
@@ -1224,6 +1224,12 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/QuoteId'
+    accountId:
+      name: accountId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/RecipientId'
 
   securitySchemes:
     BearerAuth:
@@ -1854,11 +1860,7 @@ paths:
       security:
         - BearerAuth: [ ]
       parameters:
-        - name: accountId
-          in: path
-          required: true
-          schema:
-            type: integer
+        - $ref: '#/components/parameters/accountId'
       responses:
         '200':
           description: Recipient account details
@@ -1886,13 +1888,7 @@ paths:
       security:
         - BearerAuth: [ ]
       parameters:
-        - name: accountId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            minimum: 0
+        - $ref: '#/components/parameters/accountId'
       responses:
         '200':
           description: Deactivated recipient
