@@ -1,7 +1,7 @@
 openapi: 3.1.1
 info:
   title: Wise Platform API
-  version: 0.4.5
+  version: 0.4.6
   description: |
     Comprehensive API for Wise platform services including:
     - Profile
@@ -153,6 +153,70 @@ components:
           nullable: true
         success:
           type: boolean
+
+    ApiError:
+      type: object
+      description: "API error response that can represent either system errors or client errors"
+      oneOf:
+        - $ref: '#/components/schemas/SystemError'
+        - $ref: '#/components/schemas/ClientError'
+
+    SystemError:
+      type: object
+      description: "System errors are not typically caused by the end user and often require involvement to remedy"
+      properties:
+        error:
+          type: string
+          description: "Error code identifier"
+          example: "invalid_token"
+        error_description:
+          type: string
+          description: "Error description or identifier"
+          example: "945fdc16-56cb-4039-90b4-998d583740ce"
+      required:
+        - error
+        - error_description
+
+    ClientError:
+      type: object
+      description: "Client errors consist of issues solvable by the end user or application client issues"
+      properties:
+        errors:
+          type: array
+          description: "Array of error objects providing detailed information about validation or input errors"
+          items:
+            $ref: '#/components/schemas/ClientErrorDetail'
+          minItems: 1
+      required:
+        - errors
+
+    ClientErrorDetail:
+      type: object
+      description: "Detailed error information for client errors"
+      properties:
+        code:
+          type: string
+          description: "Specific error code"
+          example: "error.greaterThanZero"
+        message:
+          type: string
+          description: "Human-readable error message"
+          example: "Please type in a number that's larger than 0."
+        path:
+          type: string
+          description: "The field path that caused the error"
+          example: "sourceAmount"
+        arguments:
+          type: array
+          description: "Additional arguments related to the error"
+          items:
+            type: string
+          example: ["targetRecipientId"]
+      required:
+        - code
+        - message
+        - path
+        - arguments
     Director:
       type: object
       properties:
@@ -1614,17 +1678,65 @@ paths:
                 quoteId: '$response.body#/id'
 
         '400':
-          description: Bad Request
+          description: Bad request. Request message data did not pass validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
         '401':
-          description: Unauthorized
+          description: Unauthorised. Not authorised to access requested data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
         '403':
-          description: Forbidden
+          description: Forbidden. Access to requested data is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
         '404':
-          description: Quote not found
+          description: Not Found. Requested resource does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '408':
+          description: Timeout. Operation timed out.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
         '422':
-          description: Unprocessable Entity
+          description: Unprocessable entity. Request message data did not pass validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '4XX':
+          description: Client Error - Bad request, unauthorized, forbidden, not found, or validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
         '500':
-          description: Internal Server Error
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '5XX':
+          description: Server Error - Internal server error or service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
       security:
         - BearerAuth: [ ]
 
