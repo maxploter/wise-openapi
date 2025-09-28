@@ -1244,6 +1244,77 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
+
+  responses:
+    BadRequest:
+      description: Bad request. Request message data did not pass validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    Unauthorized:
+      description: Unauthorised. Not authorised to access requested data.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    Forbidden:
+      description: Forbidden. Access to requested data is forbidden.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    NotFound:
+      description: Not Found. Requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    Timeout:
+      description: Timeout. Operation timed out.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    UnprocessableEntity:
+      description: Unprocessable entity. Request message data did not pass validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    TooManyRequests:
+      description: Too Many Requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    ClientError:
+      description: Client Error - Bad request, unauthorized, forbidden, not found, or validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    ServerError:
+      description: Server error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    InternalServerError:
+      description: Server Error - Internal server error or service unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
 security:
   - BearerAuth: [ ]
 paths:
@@ -1304,6 +1375,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PersonalProfile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
   /v2/profiles/business-profile:
     post:
       tags:
@@ -1336,6 +1427,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BusinessProfile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
   /v2/profiles/{profileId}/personal-profile:
     put:
       tags:
@@ -1364,6 +1475,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PersonalProfile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
   /v2/profiles/{profileId}/business-profile:
     put:
       tags:
@@ -1390,6 +1521,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BusinessProfile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
   /v2/profiles/{profileId}:
     get:
       tags:
@@ -1407,6 +1558,26 @@ paths:
                 oneOf:
                   - $ref: '#/components/schemas/PersonalProfile'
                   - $ref: '#/components/schemas/BusinessProfile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
   /v2/profiles:
     get:
       tags:
@@ -1429,6 +1600,26 @@ paths:
                     mapping:
                       PERSONAL: '#/components/schemas/PersonalProfile'
                       BUSINESS: '#/components/schemas/BusinessProfile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
   /v1/profiles/{profileId}/verification-documents:
     post:
       tags:
@@ -1458,6 +1649,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
   /v1/profiles/{profileId}/directors:
     post:
       tags:
@@ -1482,6 +1693,26 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Director'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
     get:
       tags:
         - Profiles
@@ -1498,6 +1729,26 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Director'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
     put:
       tags:
         - Profiles
@@ -1521,6 +1772,26 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Director'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
   /v3/profiles/{profileId}/verification-status/bank-transfer:
     post:
       tags:
@@ -1543,6 +1814,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/VerificationStatusResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
 
   /v1/profiles/{profileId}/activities:
     get:
@@ -1595,6 +1886,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ActivitiesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
       security:
         - BearerAuth: [ ]
   /v3/quotes:
@@ -1620,17 +1931,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/Quote'
         '400':
-          description: Bad Request
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Unauthorized
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Forbidden
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Quote not found
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
         '422':
-          description: Unprocessable Entity
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
       security: [ ]
 
   /v3/profiles/{profileId}/quotes:
@@ -1676,67 +1995,26 @@ paths:
               operationId: getRefinedAccountRequirements
               parameters:
                 quoteId: '$response.body#/id'
-
         '400':
-          description: Bad request. Request message data did not pass validation.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Unauthorised. Not authorised to access requested data.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Forbidden. Access to requested data is forbidden.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Not Found. Requested resource does not exist.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '408':
-          description: Timeout. Operation timed out.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Timeout'
         '422':
-          description: Unprocessable entity. Request message data did not pass validation.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
-          description: Too Many Requests
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/TooManyRequests'
         '4XX':
-          description: Client Error - Bad request, unauthorized, forbidden, not found, or validation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/ClientError'
         '500':
-          description: Server error.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/ServerError'
         '5XX':
-          description: Server Error - Internal server error or service unavailable
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/InternalServerError'
       security:
         - BearerAuth: [ ]
 
@@ -1764,17 +2042,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/Quote'
         '400':
-          description: Bad Request
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Unauthorized
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Forbidden
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Quote not found
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
         '422':
-          description: Unprocessable Entity
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
       security:
         - BearerAuth: [ ]
 
@@ -1795,17 +2081,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/Quote'
         '400':
-          description: Bad Request
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Unauthorized
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Forbidden
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Quote not found
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
         '422':
-          description: Unprocessable Entity
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
       security:
         - BearerAuth: [ ]
   /v1/accounts:
@@ -1844,19 +2138,26 @@ paths:
             CreateAuthenticatedQuote:
               operationId: createAuthenticatedQuote
               requestBody: '{"targetAccount": $response.body#/id}'
-
         '400':
-          description: Bad Request
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Unauthorized
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Forbidden
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Quote not found
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
         '422':
-          description: Unprocessable Entity
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
 
   /v2/accounts:
     get:
@@ -1896,17 +2197,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedRecipients'
         '400':
-          description: Bad Request
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Unauthorized
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Forbidden
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Quote not found
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
         '422':
-          description: Unprocessable Entity
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
 
   /v2/accounts/{accountId}:
     get:
@@ -1926,17 +2235,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/Recipient'
         '400':
-          description: Bad Request
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Unauthorized
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Forbidden
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Quote not found
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
         '422':
-          description: Unprocessable Entity
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
     delete:
       tags:
         - Recipients
@@ -1954,17 +2271,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/Recipient'
         '400':
-          description: Bad Request
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Unauthorized
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Forbidden
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Quote not found
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
         '422':
-          description: Unprocessable Entity
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
 
   /v1/quotes/{quoteId}/account-requirements:
     get:
@@ -2001,17 +2326,25 @@ paths:
               schema:
                 $ref: "#/components/schemas/AccountRequirements"
         '400':
-          description: Bad Request
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Unauthorized
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Forbidden
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Quote not found
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
         '422':
-          description: Unprocessable Entity
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
     post:
       tags:
         - Recipients
@@ -2062,13 +2395,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/AccountRequirements'
         '400':
-          description: Bad Request
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Quote not found
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
   /v1/transfers:
     post:
       tags:
@@ -2082,12 +2427,32 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateStandardTransferRequest'
       responses:
-        '201':
+        '200':
           description: Transfer created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/StandardTransfer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
       security:
         - BearerAuth: [ ]
 
@@ -2136,6 +2501,26 @@ paths:
                 oneOf:
                   - $ref: '#/components/schemas/StandardTransfer'
                   - $ref: '#/components/schemas/OriginatorTransfer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
       security:
         - BearerAuth: [ ]
 
@@ -2155,6 +2540,26 @@ paths:
                 oneOf:
                   - $ref: '#/components/schemas/StandardTransfer'
                   - $ref: '#/components/schemas/OriginatorTransfer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
       security:
         - BearerAuth: [ ]
 
@@ -2174,6 +2579,26 @@ paths:
               schema:
                 type: string
                 format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
       security:
         - BearerAuth: [ ]
 
@@ -2193,6 +2618,26 @@ paths:
               schema:
                 type: string
                 format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
       security:
         - BearerAuth: [ ]
 
@@ -2211,6 +2656,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BankingPartnerInvoice'
+
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
       security:
         - BearerAuth: [ ]
 
@@ -2229,6 +2695,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaymentsList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
       security:
         - BearerAuth: [ ]
 
@@ -2253,6 +2739,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OriginatorTransfer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
       security:
         - BearerAuth: [ ]
 
@@ -2272,6 +2778,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OriginatorTransfer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
       security:
         - BearerAuth: [ ]
 
@@ -2296,6 +2822,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OriginatorTransfer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
       security:
         - BearerAuth: [ ]
 
@@ -2318,6 +2864,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransferRequirementsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
       security:
         - BearerAuth: [ ]
 
@@ -2343,5 +2909,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
       security:
         - BearerAuth: [ ]
