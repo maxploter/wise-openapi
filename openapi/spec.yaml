@@ -75,53 +75,100 @@ components:
     PersonalProfile:
       type: object
       properties:
-        id:
-          $ref: '#/components/schemas/ProfileId'
         type:
           type: string
           example: "PERSONAL"
-        details:
+        id:
+          $ref: '#/components/schemas/ProfileId'
+        publicId:
+          type: string
+          format: uuid
+          description: Public identifier for the profile
+          example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+        userId:
+          $ref: '#/components/schemas/UserId'
+        address:
           type: object
           properties:
-            firstName:
+            id:
+              type: integer
+              format: int64
+              example: 36086782
+            addressFirstLine:
               type: string
-              example: "Oliver"
-            lastName:
+              example: "24 Willow Creek Lane"
+            city:
               type: string
-              example: "Wilson"
-            dateOfBirth:
+              example: "Bristol"
+            countryIso2Code:
               type: string
-              format: date
-              example: "1977-07-01"
+              pattern: '^[A-Z]{2}$'
+              example: "GB"
+            countryIso3Code:
+              type: string
+              pattern: '^[a-z]{3}$'
+              example: "gbr"
+            postCode:
+              type: string
+              example: "BS1 6AE"
+            stateCode:
+              type: string
+              nullable: true
+              example: null
+        email:
+          type: string
+          format: email
+          example: "sarah.jenkins@example.com"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-01-15T10:30:00"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-06-18T14:20:00"
+        avatar:
+          type: string
+          example: "https://example.com/avatars/sarah_jenkins.png"
+        currentState:
+          type: string
+          description: "The current state of the profile. Common values include VISIBLE, HIDDEN, SUSPENDED."
+          example: "VISIBLE"
+        contactDetails:
+          type: object
+          properties:
+            email:
+              type: string
+              format: email
+              example: "sarah.contact@example.com"
             phoneNumber:
               type: string
-              example: "+3725064992"
-            avatar:
-              type: string
-              example: ""
-            occupations:
-              type: array
-              items:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    example: "Software Engineer"
-                  format:
-                    type: string
-                    example: "FREE_FORM"
-            primaryAddress:
-              type: integer
-              nullable: true
-              example: null
-            firstNameInKana:
-              type: string
-              nullable: true
-              example: null
-            lastNameInKana:
-              type: string
-              nullable: true
-              example: null
+              example: "+447700900123"
+        firstName:
+          type: string
+          example: "Sarah"
+        lastName:
+          type: string
+          example: "Jenkins"
+        preferredName:
+          type: string
+          nullable: true
+          example: "Sal"
+        dateOfBirth:
+          type: string
+          format: date
+          example: "1985-05-20"
+        phoneNumber:
+          type: string
+          example: "+447700900456"
+        secondaryAddresses:
+          type: array
+          items:
+            type: object
+          example: []
+        fullName:
+          type: string
+          example: "Sarah Jenkins"
     BusinessProfile:
       type: object
       properties:
