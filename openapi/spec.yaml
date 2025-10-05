@@ -1,7 +1,7 @@
 openapi: 3.1.1
 info:
   title: (TransferWise) Wise Platform API
-  version: 0.4.7
+  version: 0.5.0
   description: |
     Comprehensive API for (TransferWise) Wise platform services including:
     - Profile
@@ -72,56 +72,111 @@ components:
       description: ISO 4217 three-letter currency code
       example: GBP
 
-    PersonalProfile:
+    Address:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/ProfileId'
+          type: integer
+          format: int64
+          example: 36086782
+        addressFirstLine:
+          type: string
+          example: "24 Willow Creek Lane"
+        city:
+          type: string
+          example: "Bristol"
+        countryIso2Code:
+          type: string
+          pattern: '^[A-Z]{2}$'
+          example: "GB"
+        countryIso3Code:
+          type: string
+          pattern: '^[a-z]{3}$'
+          example: "gbr"
+        postCode:
+          type: string
+          example: "BS1 6AE"
+        stateCode:
+          type: string
+          nullable: true
+          example: null
+
+    ProfileContactDetails:
+      type: object
+      description: Contact information for a profile
+      properties:
+        email:
+          type: string
+          format: email
+          example: "contact@example.com"
+        phoneNumber:
+          type: string
+          example: "+447700900123"
+
+    PersonalProfile:
+      type: object
+      properties:
         type:
           type: string
           example: "PERSONAL"
-        details:
-          type: object
-          properties:
-            firstName:
-              type: string
-              example: "Oliver"
-            lastName:
-              type: string
-              example: "Wilson"
-            dateOfBirth:
-              type: string
-              format: date
-              example: "1977-07-01"
-            phoneNumber:
-              type: string
-              example: "+3725064992"
-            avatar:
-              type: string
-              example: ""
-            occupations:
-              type: array
-              items:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    example: "Software Engineer"
-                  format:
-                    type: string
-                    example: "FREE_FORM"
-            primaryAddress:
-              type: integer
-              nullable: true
-              example: null
-            firstNameInKana:
-              type: string
-              nullable: true
-              example: null
-            lastNameInKana:
-              type: string
-              nullable: true
-              example: null
+        id:
+          $ref: '#/components/schemas/ProfileId'
+        publicId:
+          type: string
+          format: uuid
+          description: Public identifier for the profile
+          example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+        userId:
+          $ref: '#/components/schemas/UserId'
+        address:
+          $ref: '#/components/schemas/Address'
+        email:
+          type: string
+          format: email
+          example: "sarah.jenkins@example.com"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-01-15T10:30:00"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-06-18T14:20:00"
+        avatar:
+          type: string
+          example: "https://example.com/avatars/sarah_jenkins.png"
+        currentState:
+          type: string
+          description: "The current state of the profile. Common values include VISIBLE, HIDDEN, SUSPENDED."
+          example: "VISIBLE"
+        contactDetails:
+          $ref: '#/components/schemas/ProfileContactDetails'
+        firstName:
+          type: string
+          example: "Sarah"
+        lastName:
+          type: string
+          example: "Jenkins"
+        preferredName:
+          type: string
+          nullable: true
+          example: "Sal"
+        dateOfBirth:
+          type: string
+          format: date
+          example: "1985-05-20"
+        phoneNumber:
+          type: string
+          example: "+447700900456"
+        secondaryAddresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Address'
+          example: []
+        fullName:
+          type: string
+          example: "Sarah Jenkins"
+
     BusinessProfile:
       type: object
       properties:
@@ -130,22 +185,74 @@ components:
         type:
           type: string
           example: "BUSINESS"
-        details:
-          type: object
-          properties:
-            name:
-              type: string
-              example: "ABC Logistics Ltd"
-            registrationNumber:
-              type: string
-              example: "12144939"
-            companyType:
-              type: string
-              example: "LIMITED"
-            primaryAddress:
-              type: integer
-              example: 4000001
-    Error:
+        publicId:
+          type: string
+          format: uuid
+          description: Public identifier for the profile
+          example: "f0e9d8c7-b6a5-4321-fedc-ba9876543210"
+        userId:
+          $ref: '#/components/schemas/UserId'
+        address:
+          $ref: '#/components/schemas/Address'
+        email:
+          type: string
+          format: email
+          example: "info@innovate-solutions.co.uk"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-03-10T09:00:00"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-06-18T14:22:00"
+        currentState:
+          type: string
+          description: "The current state of the profile. Common values include VISIBLE, HIDDEN, SUSPENDED."
+          example: "VISIBLE"
+        contactDetails:
+          $ref: '#/components/schemas/ProfileContactDetails'
+        businessName:
+          type: string
+          example: "Innovate Solutions Ltd"
+        registrationNumber:
+          type: string
+          example: "SC1234567890ABCD"
+        descriptionOfBusiness:
+          type: string
+          description: "Business activity category. Common values include SOFTWARE_DEVELOPMENT, CONSULTING, RETAIL, MANUFACTURING, etc."
+          example: "SOFTWARE_DEVELOPMENT"
+        webpage:
+          type: string
+          format: uri
+          nullable: true
+          example: "https://www.innovate-solutions.co.uk"
+        companyType:
+          type: string
+          description: "The type of business entity. Common values include LIMITED_COMPANY, PARTNERSHIP, SOLE_TRADER, etc."
+          example: "LIMITED_COMPANY"
+        businessFreeFormDescription:
+          type: string
+          nullable: true
+          example: "We create cutting-edge software for businesses."
+        firstLevelCategory:
+          type: string
+          description: "Primary business category. Common values include TECHNOLOGY, FINANCE, RETAIL, etc."
+          example: "TECHNOLOGY"
+        secondLevelCategory:
+          type: string
+          description: "Secondary business category. Common values include SOFTWARE_SERVICES, CONSULTING_SERVICES, etc."
+          example: "SOFTWARE_SERVICES"
+        operationalAddresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Address'
+          example: []
+        fullName:
+          type: string
+          example: "Innovate Solutions Ltd"
+
+    CreateVerificationDocumentResponse:
       type: object
       properties:
         errorMessage:
@@ -734,7 +841,6 @@ components:
           country: "GB"
           city: "London"
           postCode: "E14 5LQ"
-          firstLine: "One Canada Square"
 
     PaginatedRecipients:
       type: object
@@ -1653,7 +1759,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/CreateVerificationDocumentResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
