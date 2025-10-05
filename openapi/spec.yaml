@@ -101,6 +101,18 @@ components:
           nullable: true
           example: null
 
+    ProfileContactDetails:
+      type: object
+      description: Contact information for a profile
+      properties:
+        email:
+          type: string
+          format: email
+          example: "contact@example.com"
+        phoneNumber:
+          type: string
+          example: "+447700900123"
+
     PersonalProfile:
       type: object
       properties:
@@ -138,15 +150,7 @@ components:
           description: "The current state of the profile. Common values include VISIBLE, HIDDEN, SUSPENDED."
           example: "VISIBLE"
         contactDetails:
-          type: object
-          properties:
-            email:
-              type: string
-              format: email
-              example: "sarah.contact@example.com"
-            phoneNumber:
-              type: string
-              example: "+447700900123"
+          $ref: '#/components/schemas/ProfileContactDetails'
         firstName:
           type: string
           example: "Sarah"
@@ -207,15 +211,7 @@ components:
           description: "The current state of the profile. Common values include VISIBLE, HIDDEN, SUSPENDED."
           example: "VISIBLE"
         contactDetails:
-          type: object
-          properties:
-            email:
-              type: string
-              format: email
-              example: "contact@innovate-solutions.co.uk"
-            phoneNumber:
-              type: string
-              example: "+441617891234"
+          $ref: '#/components/schemas/ProfileContactDetails'
         businessName:
           type: string
           example: "Innovate Solutions Ltd"
