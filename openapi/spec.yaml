@@ -72,6 +72,35 @@ components:
       description: ISO 4217 three-letter currency code
       example: GBP
 
+    Address:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 36086782
+        addressFirstLine:
+          type: string
+          example: "24 Willow Creek Lane"
+        city:
+          type: string
+          example: "Bristol"
+        countryIso2Code:
+          type: string
+          pattern: '^[A-Z]{2}$'
+          example: "GB"
+        countryIso3Code:
+          type: string
+          pattern: '^[a-z]{3}$'
+          example: "gbr"
+        postCode:
+          type: string
+          example: "BS1 6AE"
+        stateCode:
+          type: string
+          nullable: true
+          example: null
+
     PersonalProfile:
       type: object
       properties:
@@ -88,33 +117,7 @@ components:
         userId:
           $ref: '#/components/schemas/UserId'
         address:
-          type: object
-          properties:
-            id:
-              type: integer
-              format: int64
-              example: 36086782
-            addressFirstLine:
-              type: string
-              example: "24 Willow Creek Lane"
-            city:
-              type: string
-              example: "Bristol"
-            countryIso2Code:
-              type: string
-              pattern: '^[A-Z]{2}$'
-              example: "GB"
-            countryIso3Code:
-              type: string
-              pattern: '^[a-z]{3}$'
-              example: "gbr"
-            postCode:
-              type: string
-              example: "BS1 6AE"
-            stateCode:
-              type: string
-              nullable: true
-              example: null
+          $ref: '#/components/schemas/Address'
         email:
           type: string
           format: email
@@ -164,11 +167,12 @@ components:
         secondaryAddresses:
           type: array
           items:
-            type: object
+            $ref: '#/components/schemas/Address'
           example: []
         fullName:
           type: string
           example: "Sarah Jenkins"
+
     BusinessProfile:
       type: object
       properties:
@@ -781,7 +785,6 @@ components:
           country: "GB"
           city: "London"
           postCode: "E14 5LQ"
-          firstLine: "One Canada Square"
 
     PaginatedRecipients:
       type: object
