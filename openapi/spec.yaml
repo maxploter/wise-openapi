@@ -1,7 +1,7 @@
 openapi: 3.1.1
 info:
   title: (TransferWise) Wise Platform API
-  version: 0.4.6
+  version: 0.4.7
   description: |
     Comprehensive API for (TransferWise) Wise platform services including:
     - Profile
@@ -1558,6 +1558,11 @@ paths:
                 oneOf:
                   - $ref: '#/components/schemas/PersonalProfile'
                   - $ref: '#/components/schemas/BusinessProfile'
+                discriminator:
+                  propertyName: type
+                  mapping:
+                    PERSONAL: '#/components/schemas/PersonalProfile'
+                    BUSINESS: '#/components/schemas/BusinessProfile'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
