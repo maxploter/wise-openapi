@@ -1,7 +1,7 @@
 openapi: 3.1.1
 info:
   title: (TransferWise) Wise Platform API
-  version: 0.4.7
+  version: 0.5.0
   description: |
     Comprehensive API for (TransferWise) Wise platform services including:
     - Profile
@@ -252,7 +252,7 @@ components:
           type: string
           example: "Innovate Solutions Ltd"
 
-    Error:
+    CreateVerificationDocumentResponse:
       type: object
       properties:
         errorMessage:
@@ -1759,7 +1759,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/CreateVerificationDocumentResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
