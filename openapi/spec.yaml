@@ -852,6 +852,25 @@ components:
         size:
           type: integer
           example: 1
+          description: Number of items in the current page
+        seekPositionForNext:
+          type: integer
+          nullable: true
+          description: Position to use in the seekPosition parameter to get the next page of results
+        seekPositionForCurrent:
+          type: integer
+          nullable: true
+          description: Position to use in the seekPosition parameter to get the current page again
+        sort:
+          type: object
+          description: Sort information for the results
+          properties:
+            empty:
+              type: boolean
+            sorted:
+              type: boolean
+            unsorted:
+              type: boolean
 
     AccountRequirements:
       type: array
