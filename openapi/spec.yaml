@@ -1,7 +1,7 @@
 openapi: 3.1.1
 info:
   title: (TransferWise) Wise Platform API
-  version: 0.5.4
+  version: 0.5.5
   description: |
     Comprehensive API for (TransferWise) Wise platform services including:
     - Profile
@@ -2599,13 +2599,7 @@ paths:
       security:
         - BearerAuth: [ ]
       parameters:
-        - name: quoteId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: "The ID of the quote."
+        - $ref: '#/components/parameters/quoteId'
         - name: originatorLegalEntityType
           in: query
           schema:
