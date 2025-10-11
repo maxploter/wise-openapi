@@ -1,7 +1,7 @@
 openapi: 3.1.1
 info:
   title: (TransferWise) Wise Platform API
-  version: 0.5.5
+  version: 0.5.6
   description: |
     Comprehensive API for (TransferWise) Wise platform services including:
     - Profile
@@ -1412,13 +1412,13 @@ components:
       in: query
       schema:
         type: string
-        format: date-time
+        format: date
     createdDateEnd:
       name: createdDateEnd
       in: query
       schema:
         type: string
-        format: date-time
+        format: date
     limit:
       name: limit
       in: query
