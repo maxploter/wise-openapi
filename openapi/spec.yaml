@@ -1,7 +1,7 @@
 openapi: 3.1.1
 info:
   title: (TransferWise) Wise Platform API
-  version: 0.5.0
+  version: 0.5.1
   description: |
     Comprehensive API for (TransferWise) Wise platform services including:
     - Profile
