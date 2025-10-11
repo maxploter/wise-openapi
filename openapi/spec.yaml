@@ -1,7 +1,7 @@
 openapi: 3.1.1
 info:
   title: (TransferWise) Wise Platform API
-  version: 0.5.3
+  version: 0.5.4
   description: |
     Comprehensive API for (TransferWise) Wise platform services including:
     - Profile
@@ -713,10 +713,24 @@ components:
     UpdateQuoteRequest:
       type: object
       properties:
+        sourceCurrency:
+          $ref: '#/components/schemas/Currency'
+        targetCurrency:
+          $ref: '#/components/schemas/Currency'
         targetAccount:
-          type: integer
-          format: int64
-          minimum: 0
+          $ref: '#/components/schemas/RecipientId'
+        targetAmount:
+          type: number
+          nullable: true
+          format: double
+          description: "The amount in the target currency. Must be greater than 0."
+          exclusiveMinimum: 0
+        sourceAmount:
+          type: number
+          nullable: true
+          format: double
+          description: "The amount in the source currency. Must be greater than 0."
+          exclusiveMinimum: 0
         payOut:
           type: string
         paymentMetadata:
