@@ -912,14 +912,15 @@ components:
         quote:
           type: integer
           nullable: true
+          description: v1 quote ID (deprecated)
         quoteUuid:
-          $ref: '#/components/schemas/QuoteId'
+          anyOf:
+            - $ref: '#/components/schemas/QuoteId'
+            - type: 'null'
+          description: v2 quote ID
         status:
           type: string
           description: "The current status of the transfer. Common values include pending, processing, funded, cancelled, outgoing_payment_sent, funds_refunded. This list may be extended by the API provider."
-        reference:
-          type: string
-          deprecated: true
         rate:
           type: number
           format: float
@@ -951,11 +952,17 @@ components:
         customerTransactionId:
           type: string
           format: uuid
+          nullable: true
+          description: Unique identifier randomly generated per transfer request by the calling client
+        payinSessionId:
+          type: string
+          format: uuid
+          nullable: true
+          description: ID of the Payin Session generated for the transfer
       required:
         - id
         - user
         - targetAccount
-        - quoteUuid
         - status
         - rate
         - created
@@ -966,18 +973,79 @@ components:
         - targetValue
 
     OriginatorTransfer:
-      allOf:
-        - $ref: '#/components/schemas/StandardTransfer'
-        - type: object
-          properties:
-            originator:
-              $ref: '#/components/schemas/Originator'
-            originalTransferId:
-              type: string
-              format: uuid
-          required:
-            - originator
-            - originalTransferId
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/TransferId'
+        user:
+          type: integer
+          example: 4342275
+        targetAccount:
+          type: integer
+          example: 8692237
+        sourceAccount:
+          type: integer
+          nullable: true
+        quote:
+          type: string
+          format: uuid
+          description: quote ID
+        status:
+          type: string
+          description: "The current status of the transfer. Common values include pending, processing, funded, cancelled, outgoing_payment_sent, funds_refunded. This list may be extended by the API provider."
+        rate:
+          type: number
+          format: float
+          example: 0.89
+        created:
+          type: string
+          format: date-time
+        business:
+          type: integer
+          nullable: true
+        transferRequest:
+          type: integer
+          nullable: true
+          deprecated: true
+        details:
+          $ref: '#/components/schemas/TransferDetails'
+        hasActiveIssues:
+          type: boolean
+        sourceCurrency:
+          $ref: '#/components/schemas/Currency'
+        sourceValue:
+          type: number
+          format: float
+        targetCurrency:
+          $ref: '#/components/schemas/Currency'
+        targetValue:
+          type: number
+          format: float
+        originalTransferId:
+          type: string
+          format: uuid
+          description: Unique identifier randomly generated per transfer request by the calling client
+        payinSessionId:
+          type: string
+          format: uuid
+          nullable: true
+          description: ID of the Payin Session generated for the transfer
+        originator:
+          $ref: '#/components/schemas/Originator'
+      required:
+        - id
+        - user
+        - targetAccount
+        - status
+        - rate
+        - created
+        - details
+        - sourceCurrency
+        - sourceValue
+        - targetCurrency
+        - targetValue
+        - originator
+        - originalTransferId
 
     Originator:
       type: object
