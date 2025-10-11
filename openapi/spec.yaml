@@ -2660,6 +2660,26 @@ paths:
                   oneOf:
                     - $ref: '#/components/schemas/StandardTransfer'
                     - $ref: '#/components/schemas/OriginatorTransfer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '4XX':
+          $ref: '#/components/responses/ClientError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '5XX':
+          $ref: '#/components/responses/InternalServerError'
       security:
         - BearerAuth: [ ]
 
