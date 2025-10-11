@@ -1,7 +1,7 @@
 openapi: 3.1.1
 info:
   title: (TransferWise) Wise Platform API
-  version: 0.5.2
+  version: 0.5.3
   description: |
     Comprehensive API for (TransferWise) Wise platform services including:
     - Profile
@@ -852,6 +852,25 @@ components:
         size:
           type: integer
           example: 1
+          description: Number of items in the current page
+        seekPositionForNext:
+          type: integer
+          nullable: true
+          description: Position to use in the seekPosition parameter to get the next page of results
+        seekPositionForCurrent:
+          type: integer
+          nullable: true
+          description: Position to use in the seekPosition parameter to get the current page again
+        sort:
+          type: object
+          description: Sort information for the results
+          properties:
+            empty:
+              type: boolean
+            sorted:
+              type: boolean
+            unsorted:
+              type: boolean
 
     AccountRequirements:
       type: array
@@ -2343,31 +2362,64 @@ paths:
       tags:
         - Recipients
       summary: List recipient accounts
+      description: "Retrieve a paginated list of recipient accounts with optional filtering and sorting. All query parameters are optional."
       operationId: listRecipientAccounts
       security:
         - BearerAuth: [ ]
       parameters:
+        - name: creatorId
+          in: query
+          description: Creator of the account
+          schema:
+            type: integer
         - name: profileId
           in: query
+          description: Filter by personal or business profile, returns only those owned by this profile. Defaults to the personal profile.
           schema:
             type: integer
         - name: currency
           in: query
+          description: Filter responses by currency, comma separated values are supported (e.g. USD,GBP)
           schema:
             type: string
             pattern: '^[A-Z]{3}$'
             minLength: 3
             maxLength: 3
+        - name: active
+          in: query
+          description: Filter by whether this profile is active. Defaults to true.
+          schema:
+            type: boolean
+            default: true
+        - name: type
+          in: query
+          description: Filter responses by account type, comma separated values are supported (e.g. iban,swift_code)
+          schema:
+            type: string
+        - name: ownedByCustomer
+          in: query
+          description: Filter to get accounts owned by the customer or not, leave out to get all accounts
+          schema:
+            type: boolean
         - name: size
           in: query
+          description: Page size of the response. Defaults to a maximum of 20.
           schema:
             type: integer
             default: 20
-            format: int8
+            maximum: 40
         - name: seekPosition
           in: query
+          description: Account ID to start the page of responses from in the response. null if no more pages.
           schema:
             type: integer
+            nullable: true
+        - name: sort
+          in: query
+          description: "Sorting strategy for the response. Comma separated options: firstly either id or currency, followed by asc or desc for direction (e.g. id,asc or currency,desc)"
+          schema:
+            type: string
+            example: "id,asc"
       responses:
         '200':
           description: List of recipient accounts
